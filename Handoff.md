@@ -324,11 +324,10 @@ Full list in the README. The ones most likely to bite:
 
 ## Not done
 
-- The plan doc was not edited in Session 3b. Its 3b pass test says "from 51%
-  raw"; the exact figure is 50.4%, so that should read 50%.
-- The plan heads the revised diagnostic "before any 3b results". In this
-  repository's history the first version's figures come first (`766abce`), so
-  the two do not match as worded.
+- This session did not edit the plan doc. The maintainer has since updated it:
+  it records the 3b results, gives the raw outer-tenth share as 50.4%, and
+  says the diagnostic was revised after the first 3b run, which matches this
+  repository's history.
 - Chart #4 ("where it breaks"), the shareable page and the post are Session 4.
 - No batchy projects were added; that would need its own filter, fixed before
   looking at results.
