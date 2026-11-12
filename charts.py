@@ -18,9 +18,15 @@ Every definition here was fixed before the full results existed:
 **Experiment 3b** (block resampling, not FlowAugur's engine) gets its own two
 figures, ``calibration_3b.png`` and ``pit_histogram_3b.png``, drawn from
 ``data/experiment_3b.parquet`` with the same definitions. They show four
-methods at the same settings: the two Session 3 series above, and 14-day and
-28-day block resampling on raw history. The Session 3 figures are left as they
-were.
+methods at the same settings: the two main-replay series above, and 14-day and
+28-day block resampling on raw history.
+
+**Where it breaks** (``where_it_breaks.png``) is drawn from the same table. For
+each project and for the 8- and 12-week horizons it sets the share of forecasts
+in which the pace shifted (the horizon's daily rate below 0.8 or above 1.25
+times the history's) against the share the forecast's own simulated outcomes
+expected, for single-day resampling on raw history. Projects are ordered by how
+often their 85% forecast held as shipped.
 
 Usage::
 
@@ -41,6 +47,7 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
 
 import backtest  # noqa: E402
+import experiment_3b  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 FIGURES = HERE / "figures"
@@ -51,14 +58,14 @@ SERIES = {True: ("As shipped (IQR outlier drop on)", "#2a78d6", "o"), False: ("R
 LEVELS = [50, 70, 85, 95]
 BUCKET_NAME = {"day": "day", "week": "week", "2 weeks": "2-week"}
 # Experiment 3b: method -> (label, colour, marker). Colour follows the method, so the two
-# Session 3 series keep theirs. Validated in this order; marker shape repeats the identity.
+# main-replay series keep theirs. Validated in this order; marker shape repeats the identity.
 METHOD_STYLE = {
     "shipped": ("Day buckets, as shipped", "#2a78d6", "o"),
     "raw": ("Day buckets, raw", "#eb6834", "s"),
     "block14": ("14-day blocks, raw (experiment)", "#1baf7a", "D"),
     "block28": ("28-day blocks, raw (experiment)", "#eda100", "^"),
 }
-PASS_MARK = (0.80, 0.90)  # the plan's pass mark for P85
+PASS_MARK = (0.80, 0.90)  # the pass mark for P85, set before any results
 SOURCE = "Source: The Public Jira Dataset (Montgomery, Lüders & Maalej), CC BY 4.0."
 
 
@@ -83,7 +90,7 @@ def marks(ax: plt.Axes, x: float, rates: np.ndarray, color: str, marker: str) ->
 
 
 def spread(ax: plt.Axes, x: float, rates: np.ndarray, drop: bool, label_side: int) -> float:
-    """``marks`` for a Session 3 series, with the mean labelled beside its point."""
+    """``marks`` for a main-replay series, with the mean labelled beside its point."""
     _, color, marker = SERIES[drop]
     mean = marks(ax, x, rates, color, marker)
     ax.annotate(
@@ -105,9 +112,9 @@ def legend(fig: plt.Figure, y: float) -> None:
         text.set_color(MUTED)
 
 
-def titles(fig: plt.Figure, title: str, subtitle: str, footnote: str) -> None:
-    fig.suptitle(title, x=0.045, y=0.972, ha="left", fontsize=14, color=INK, fontweight="bold")
-    fig.text(0.045, 0.915, subtitle, ha="left", va="top", fontsize=10, color=MUTED, linespacing=1.4)
+def titles(fig: plt.Figure, title: str, subtitle: str, footnote: str, title_y: float = 0.972, subtitle_y: float = 0.915) -> None:
+    fig.suptitle(title, x=0.045, y=title_y, ha="left", fontsize=14, color=INK, fontweight="bold")
+    fig.text(0.045, subtitle_y, subtitle, ha="left", va="top", fontsize=10, color=MUTED, linespacing=1.4)
     fig.text(0.045, 0.022, footnote + "\n" + SOURCE, ha="left", va="bottom", fontsize=8.5, color=MUTED, linespacing=1.4)
 
 
@@ -138,7 +145,7 @@ def calibration(results: pd.DataFrame) -> dict:
     fig, ax = plt.subplots(figsize=(12, 6.3), facecolor=SURFACE)
     ax.plot([40, 100], [0.40, 1.00], color=RULE, linewidth=1.1, linestyle=(0, (4, 3)), zorder=1)
     ax.annotate("perfectly calibrated", xy=(60, 0.60), xytext=(0, 7), textcoords="offset points", ha="center", fontsize=9, color=MUTED)
-    ax.plot([85, 85], PASS_MARK, color=RULE, linewidth=9, alpha=0.55, solid_capstyle="butt", zorder=1)
+    ax.axhspan(*PASS_MARK, color=RULE, alpha=0.22, linewidth=0, zorder=0)  # spans the chart
     means: dict = {}
     for drop, offset in ((True, -1.5), (False, 1.5)):
         for level in LEVELS:
@@ -251,7 +258,7 @@ def pit_histogram(results: pd.DataFrame) -> dict:
 
 
 def calibration_3b(table: pd.DataFrame) -> dict:
-    """The calibration plot with the block-resampling experiment beside Session 3's series."""
+    """The calibration plot with the block-resampling experiment beside the main replay's series."""
     rates = table.groupby(["instance", "project", "method"])[backtest.HIT_COLUMNS].mean()
     fig, ax = plt.subplots(figsize=(12, 6.3), facecolor=SURFACE)
     ax.axhspan(*PASS_MARK, color=RULE, alpha=0.22, linewidth=0, zorder=0)  # spans the chart
@@ -340,6 +347,86 @@ def pit_histogram_3b(table: pd.DataFrame) -> dict:
     return shares
 
 
+def where_it_breaks(table: pd.DataFrame) -> pd.DataFrame:
+    """Chart #4: per project, how often the pace shifted against how often the forecast expected it."""
+    projects = experiment_3b.pace_by_project(table)
+    held = projects.drop_duplicates(["instance", "project"]).set_index(["instance", "project"])["p85_shipped"].sort_values()
+    per_project = projects.set_index(["instance", "project", "horizon_days"])[["observed_shift", "expected_shift"]]
+    per_project = per_project.rename(columns={"observed_shift": "observed", "expected_shift": "expected"})
+    diagnostic = experiment_3b.pace_shift(table)
+    overall = diagnostic[diagnostic["method"] == "raw"].set_index("horizon_days")[["observed_shift", "expected_shift"]]
+    overall = overall.rename(columns={"observed_shift": "observed", "expected_shift": "expected"})
+    worst = list(held.index[:3])
+    blue = SERIES[True][1]
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 9.4), sharey=True, facecolor=SURFACE)
+    rows = [None, *held.index]  # None = all projects together, drawn first
+    ys = [0.0] + [i + 1.6 for i in range(len(held))]
+    for ax, horizon_days in zip(axes, (56, 84)):
+        ax.axhspan(ys[1] - 0.5, ys[3] + 0.5, color=RULE, alpha=0.2, linewidth=0, zorder=0)
+        for key, y in zip(rows, ys):
+            point = overall.loc[horizon_days] if key is None else per_project.loc[(*key, horizon_days)]
+            strong = key is None or key in worst
+            ax.plot(
+                [point["expected"], point["observed"]], [y, y], color=INK if strong else MUTED,
+                linewidth=2.4 if strong else 1.3, alpha=1 if strong else 0.55, solid_capstyle="round", zorder=2,
+            )  # fmt: skip
+            size = 95 if key is None else 46
+            ax.scatter([point["expected"]], [y], s=size, facecolors=SURFACE, edgecolors=blue, linewidths=1.8, zorder=3)
+            ax.scatter([point["observed"]], [y], s=size, color=blue, edgecolors=SURFACE, linewidths=1.0, zorder=4)
+            if key is None:
+                ax.annotate(f"{point['expected']:.0%}", xy=(point["expected"], y), xytext=(-10, 0), textcoords="offset points", ha="right", va="center", fontsize=10.5, color=INK, fontweight="bold")
+                ax.annotate(f"{point['observed']:.0%}", xy=(point["observed"], y), xytext=(10, 0), textcoords="offset points", ha="left", va="center", fontsize=10.5, color=INK, fontweight="bold")
+        ax.set_xlim(-0.06, 1.0)
+        ax.set_xticks(np.arange(0, 1.01, 0.25))
+        ax.set_xticklabels([f"{v:.0%}" for v in np.arange(0, 1.01, 0.25)])
+        ax.set_xlabel("Share of Forecasts With a Pace Shift", fontsize=9.5, color=MUTED)
+        ax.set_title(f"{horizon_days // 7}-week horizon", fontsize=11.5, color=INK, loc="left", fontweight="bold", pad=10)
+        ax.set_facecolor(SURFACE)
+        ax.grid(axis="x", color=RULE, linewidth=0.5, alpha=0.5)
+        ax.set_axisbelow(True)
+        for side in ("top", "right", "left"):
+            ax.spines[side].set_visible(False)
+        ax.spines["bottom"].set_color(RULE)
+        ax.tick_params(colors=MUTED, labelsize=9.5, length=0)
+    axes[0].set_ylim(ys[-1] + 0.7, -0.9)
+    axes[0].set_yticks(ys)
+    labels = axes[0].set_yticklabels(["All 24 projects"] + [f"{instance} {project}" for instance, project in held.index])
+    for label, key in zip(labels, rows):
+        strong = key is None or key in worst
+        label.set_color(INK if strong else MUTED)
+        label.set_fontweight("bold" if strong else "normal")
+    # Right-hand column: how often each project's 85% forecast held.
+    column = axes[1].get_yaxis_transform()
+    axes[1].text(1.03, -1.25, "85% forecast\nheld", transform=column, fontsize=9, color=MUTED, va="center", linespacing=1.2)
+    axes[1].text(1.03, ys[0], f"{held.mean():.0%}", transform=column, fontsize=10.5, color=INK, fontweight="bold", va="center")
+    for key, y in zip(held.index, ys[1:]):
+        strong = key in worst
+        axes[1].text(1.03, y, f"{held[key]:.0%}", transform=column, fontsize=9.5, color=INK if strong else MUTED, fontweight="bold" if strong else "normal", va="center")
+
+    at12 = overall.loc[84]
+    titles(
+        fig,
+        f"Pace shifted in {at12['observed']:.0%} of 12-week forecasts; resampling the past expected {at12['expected']:.0%}",
+        "A pace shift: over the forecast horizon the project finished work at less than 0.8 or more than 1.25 times its rate over the previous 26 weeks.\n"
+        "Projects are ordered by how often their 85% forecast held. The three where it held least (shaded) all changed pace far more than expected.",
+        "Expected = the same share across each forecast's own 10,000 simulated outcomes, resampling single days of raw history (no outlier drop).\n"
+        "34 forecasts per project and horizon, two weeks apart, so they overlap. The 85% column is FlowAugur as shipped, all four horizons.",
+        title_y=0.982,
+        subtitle_y=0.945,
+    )
+    handles = [
+        Line2D([], [], color=blue, marker="o", markersize=8, markerfacecolor=SURFACE, markeredgewidth=1.8, linewidth=0, label="how often the forecast expected a pace shift"),
+        Line2D([], [], color=blue, marker="o", markersize=8, linewidth=0, label="how often one happened"),
+    ]
+    out = fig.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.036, 0.903), ncols=2, frameon=False, fontsize=9.5, columnspacing=2.0)
+    for text in out.get_texts():
+        text.set_color(MUTED)
+    fig.subplots_adjust(left=0.165, right=0.905, top=0.83, bottom=0.14, wspace=0.07)
+    save(fig, "where_it_breaks.png")
+    return per_project
+
+
 def main() -> int:
     results = pd.read_parquet(HERE / "data" / "results.parquet")
     means = calibration(results)
@@ -359,7 +446,8 @@ def main() -> int:
         table = pd.read_parquet(experiment)
         calibration_3b(table)
         pit_histogram_3b(table)
-        print("experiment 3b: calibration_3b.png and pit_histogram_3b.png drawn")
+        where_it_breaks(table)
+        print("experiment 3b: calibration_3b.png, pit_histogram_3b.png and where_it_breaks.png drawn")
     return 0
 
 

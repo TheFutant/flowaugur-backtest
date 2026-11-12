@@ -12,7 +12,7 @@ and then compared with what the project actually completed. The engine is the
 verbatim snapshot under ``engine/`` (see ``engine/snapshot.py``), and numpy,
 pandas and pyarrow are pinned to the versions the app itself locks.
 
-Conventions (the plan's "Decisions locked" table):
+Conventions, all decided before any results (see METHODS.md):
 
 * A cutoff ``T`` is a UTC day. History is the ``W`` days ``T-W .. T-1``,
   zero-filled; the horizon is the ``H`` days ``T .. T+H-1``. Nothing on or

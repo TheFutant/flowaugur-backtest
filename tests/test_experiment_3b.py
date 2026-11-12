@@ -210,6 +210,18 @@ def test_pace_distribution_reports_all_horizons_then_each() -> None:
     assert out.loc["28", "above_1.25"] == pytest.approx(0.5)
 
 
+def test_pace_by_project_sets_each_projects_shifts_beside_its_p85() -> None:
+    ratio = [0.7, 1.0, 1.0, 1.3]
+    raw = _table("raw", [0.5] * 4, [True] * 4, 60.0, ratio, expected=0.1)
+    shipped = _table("shipped", [0.5] * 4, [True, True, True, False], 60.0, ratio, expected=np.nan)
+    other = pd.concat([raw, shipped]).assign(project="B", pace_ratio=1.0)
+    out = x.pace_by_project(pd.concat([raw, shipped, other])).set_index("project")
+    assert out["forecasts"].tolist() == [4, 4]
+    assert out.loc["A", ["observed_shift", "expected_shift", "excess_shift"]].tolist() == pytest.approx([0.5, 0.1, 0.4])
+    assert out.loc["B", ["observed_shift", "excess_shift"]].tolist() == pytest.approx([0.0, -0.1])
+    assert out["p85_shipped"].tolist() == pytest.approx([0.75, 0.75])  # from the as-shipped rows, not the raw ones
+
+
 # ---- assembling the table ---------------------------------------------------
 
 

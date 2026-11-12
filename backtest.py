@@ -2,7 +2,7 @@
 
 Nothing is simulated until each project's qualifying window and first and last
 cutoff have been recomputed and compared with ``data/frozen_windows.csv``, the
-table fixed in the plan before any results existed. Any difference stops the
+table fixed before any results existed (see METHODS.md). Any difference stops the
 run.
 
 Writes:

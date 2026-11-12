@@ -1,7 +1,7 @@
 """Daily throughput per project, steadiness metrics, and a sparkline sheet.
 
 Reads ``data/done_dates.parquet`` (from ``extract_done_dates.py``) and applies
-the backtest plan's counting rule — Story, Task, Bug and Improvement only, no
+the backtest's counting rule — Story, Task, Bug and Improvement only, no
 sub-tasks — then writes:
 
 ``data/daily_throughput.parquet``
@@ -17,7 +17,7 @@ sub-tasks — then writes:
 ``figures/weekly_throughput.png``
     One weekly-throughput sparkline per project whose best 2-year window has at
     least 10 done items in more than half its weeks — the loosest reading of the
-    plan's filter, so every plausible candidate is on the sheet.
+    project filter, so every plausible candidate is on the sheet.
 
 Usage::
 
