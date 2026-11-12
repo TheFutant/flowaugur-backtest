@@ -6,7 +6,8 @@ real days instead fixes that. The sampler below was written for this backtest;
 it is not in ``engine/`` (which stays a verbatim snapshot of what the app
 ships) and it is not in the app.
 
-The spec was declared in the plan before any 3b results existed:
+The variants, settings and pass test were declared in the plan before any 3b
+results existed:
 
 * **Variants.** A moving-block bootstrap on the daily history, with 14-day and
   28-day blocks: start points drawn uniformly from all full blocks in the
@@ -18,16 +19,29 @@ The spec was declared in the plan before any 3b results existed:
   ``data/results.parquet``: day buckets raw, and day buckets as shipped.
 * **Pass test, all three:** P85 holds 80-90% of the time; the share of actuals
   in the outer tenths of the forecast is at most 30%; mean CRPS is at most 64.
-* **Pace-shift diagnostic, descriptive only.** For every forecast, the
-  horizon's daily rate divided by the history's; and the share of outer-tenth
-  misses where that ratio is below 0.8 or above 1.25.
+
+**Pace-shift diagnostic** (descriptive only; it is not part of the pass test).
+For every forecast, the *pace ratio* is the horizon's daily rate divided by the
+history's. A *shift* is a ratio below 0.8 or above 1.25.
+
+* *Observed shift share*: the share of forecasts whose actual ratio is a shift.
+* *Expected shift share*: the same share across each forecast's own 10,000
+  simulated totals (total / horizon / history rate), averaged over forecasts.
+  It is how often such a swing would happen if the forecast's model of
+  variation were right.
+* *Excess shift*: observed minus expected, by horizon, for raw day buckets and
+  both block variants.
+
+This is the plan's revised diagnostic. Its first version (the share of
+outer-tenth misses that came with a shift) was dropped as circular: a miss is,
+nearly by definition, a result far from the history rate.
 
 Scoring is ``replay.score``, the same function Session 3 used.
 
 Writes ``data/experiment_3b.parquet`` (one row per project x cutoff x horizon x
-method, baselines included), ``data/experiment_3b_summary.csv`` (the pass test
-and the diagnostic per method) and ``data/experiment_3b_pace.csv`` (the pace
-ratio's distribution, overall and by horizon).
+method, baselines included), ``data/experiment_3b_summary.csv`` (each method
+against the pass test), ``data/experiment_3b_pace.csv`` (the diagnostic) and
+``data/experiment_3b_pace_distribution.csv`` (the pace ratio's quantiles).
 
 Usage::
 
@@ -44,6 +58,7 @@ import pandas as pd
 
 import backtest
 import replay
+from engine.simulate import forecast_items_by_date
 
 HERE = Path(__file__).resolve().parent
 
@@ -57,6 +72,9 @@ METHODS = {
     "block28": "28-day blocks, raw (experiment)",
 }
 EXPERIMENTAL = ("block14", "block28")
+# The diagnostic compares methods that resample the same raw history.
+DIAGNOSTIC_METHODS = ("raw", "block14", "block28")
+KEYS = ["instance", "project", "cutoff", "horizon_days"]
 
 # The pass test, as declared.
 P85_RANGE = (0.80, 0.90)
@@ -94,51 +112,92 @@ def rng_for(instance: str, project: str, cutoff: pd.Timestamp, block_days: int, 
     return np.random.default_rng([replay.SEED, 3, name, cutoff.toordinal(), block_days, horizon_days])
 
 
-def pace_ratio(hist: pd.Series, done: int, horizon_days: int) -> float:
+def is_shift(ratio):
+    """A pace ratio outside the declared band."""
+    return (ratio < PACE_LOW) | (ratio > PACE_HIGH)
+
+
+def pace_ratio(hist: pd.Series, done: float, horizon_days: int) -> float:
     """The horizon's daily rate divided by the history's daily rate."""
     history_rate = float(hist.sum()) / len(hist)
     return (done / horizon_days) / history_rate if history_rate > 0 else float("nan")
 
 
-def run_blocks(frozen: pd.DataFrame) -> pd.DataFrame:
-    """The block-bootstrap forecasts, scored, with the pace ratio of each forecast."""
+def expected_shift(hist: pd.Series, totals: np.ndarray, horizon_days: int) -> float:
+    """Share of a forecast's own simulated totals whose pace ratio is a shift."""
+    history_rate = float(hist.sum()) / len(hist)
+    if history_rate <= 0:
+        return float("nan")
+    return float(is_shift(totals / horizon_days / history_rate).mean())
+
+
+def run(frozen: pd.DataFrame) -> pd.DataFrame:
+    """Every forecast that resamples raw history, scored, with its pace ratio and
+    its expected shift share: the two block variants, and Session 3's raw
+    day-bucket forecast regenerated from the same engine call and random stream."""
     rows = []
     for row in frozen.itertuples():
         daily = replay.load_daily(row.instance, row.project)
         for cutoff in replay.cutoffs(replay.qualifying_window(daily)):
             hist = replay.history(daily, cutoff, HISTORY_DAYS)
+            samples, _ = replay.prepare(hist, backtest.APP_BUCKET, drop_outliers=False)
             for horizon_days in replay.HORIZON_DAYS:
                 done = replay.actual(daily, cutoff, horizon_days)
-                ratio = pace_ratio(hist, done, horizon_days)
+                simulated = {
+                    "raw": forecast_items_by_date(
+                        samples,
+                        horizon_days,
+                        n_trials=replay.N_TRIALS,
+                        rng=replay.rng_for(cutoff, 1, HISTORY_DAYS, horizon_days, False),
+                        bucket_days=1,
+                    )
+                }
                 for block_days in BLOCK_DAYS:
-                    totals = block_totals(
+                    simulated[f"block{block_days}"] = block_totals(
                         hist.to_numpy(),
                         horizon_days,
                         block_days,
                         replay.N_TRIALS,
                         rng_for(row.instance, row.project, cutoff, block_days, horizon_days),
                     )
+                for method, totals in simulated.items():
                     rows.append(
                         {
                             "instance": row.instance,
                             "project": row.project,
                             "cutoff": cutoff.date(),
                             "horizon_days": horizon_days,
-                            "method": f"block{block_days}",
-                            "pace_ratio": ratio,
+                            "method": method,
+                            "pace_ratio": pace_ratio(hist, done, horizon_days),
+                            "expected_shift": expected_shift(hist, totals, horizon_days),
                             **replay.score(totals, done),
                         }
                     )
     return pd.DataFrame(rows)
 
 
-def baselines(results: pd.DataFrame, pace: pd.DataFrame) -> pd.DataFrame:
+def session_3(results: pd.DataFrame) -> pd.DataFrame:
     """Session 3's forecasts at the app's defaults, in the experiment's layout."""
-    keys = ["instance", "project", "cutoff", "horizon_days"]
     subset = backtest.app_default(results).copy()
     subset["method"] = np.where(subset["outlier_drop"], "shipped", "raw")
-    columns = [*keys, "method", "actual", "mean", *replay.SCORE_COLUMNS]
-    return subset[columns].merge(pace, on=keys, how="left", validate="many_to_one")
+    return subset[[*KEYS, "method", "actual", "mean", *replay.SCORE_COLUMNS]]
+
+
+def assemble(simulated: pd.DataFrame, results: pd.DataFrame) -> pd.DataFrame:
+    """One table for all four methods. The raw rows regenerated here must be
+    Session 3's rows exactly; the as-shipped rows are taken from Session 3."""
+    published = session_3(results)
+    scored = ["actual", "mean", *replay.SCORE_COLUMNS]
+    ours = simulated[simulated["method"] == "raw"].set_index(KEYS)[scored]
+    theirs = published[published["method"] == "raw"].set_index(KEYS)[scored]
+    if not ours.sort_index().equals(theirs.sort_index()):
+        raise RuntimeError("the regenerated raw day-bucket forecasts differ from data/results.parquet")
+    pace = simulated.drop_duplicates(KEYS)[[*KEYS, "pace_ratio"]]
+    shipped = published[published["method"] == "shipped"].merge(pace, on=KEYS, validate="one_to_one")
+    table = pd.concat([shipped, simulated], ignore_index=True)
+    table["experimental"] = table["method"].isin(EXPERIMENTAL)
+    order = {method: i for i, method in enumerate(METHODS)}
+    return table.sort_values(by="method", key=lambda m: m.map(order), kind="stable").reset_index(drop=True)
 
 
 def pass_test(table: pd.DataFrame) -> pd.DataFrame:
@@ -173,41 +232,31 @@ def pass_test(table: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def pace_shift(table: pd.DataFrame) -> tuple[pd.Series, pd.DataFrame]:
-    """The ratio's distribution over forecasts, and per method how many
-    outer-tenth misses (and how many of the rest) had a pace shift."""
-    per_forecast = table.drop_duplicates(["instance", "project", "cutoff", "horizon_days"])["pace_ratio"]
-    shifted = (per_forecast < PACE_LOW) | (per_forecast > PACE_HIGH)
-    distribution = pd.Series(
-        {
-            "forecasts": len(per_forecast),
-            **{f"p{q:02d}": float(per_forecast.quantile(q / 100)) for q in (5, 25, 50, 75, 95)},
-            f"below_{PACE_LOW}": float((per_forecast < PACE_LOW).mean()),
-            f"above_{PACE_HIGH}": float((per_forecast > PACE_HIGH).mean()),
-            "shifted": float(shifted.mean()),
-        }
-    )
+def pace_shift(table: pd.DataFrame) -> pd.DataFrame:
+    """The diagnostic: observed, expected and excess shift share by horizon and method."""
     rows = []
-    for method, label in METHODS.items():
-        t = table[table["method"] == method]
-        miss = (t["pit"] < 0.1) | (t["pit"] >= 0.9)
-        moved = (t["pace_ratio"] < PACE_LOW) | (t["pace_ratio"] > PACE_HIGH)
-        rows.append(
-            {
-                "method": method,
-                "label": label,
-                "outer_tenth_misses": int(miss.sum()),
-                "misses_with_pace_shift": float(moved[miss].mean()),
-                "others_with_pace_shift": float(moved[~miss].mean()),
-                "pace_shifts_that_missed": float(miss[moved].mean()),
-            }
-        )
-    return distribution, pd.DataFrame(rows)
+    for horizon_days, at_horizon in table.groupby("horizon_days"):
+        for method in DIAGNOSTIC_METHODS:
+            t = at_horizon[at_horizon["method"] == method]
+            observed = float(is_shift(t["pace_ratio"]).mean())
+            expected = float(t["expected_shift"].mean())
+            rows.append(
+                {
+                    "horizon_days": horizon_days,
+                    "method": method,
+                    "label": METHODS[method],
+                    "forecasts": len(t),
+                    "observed_shift": observed,
+                    "expected_shift": expected,
+                    "excess_shift": observed - expected,
+                }
+            )
+    return pd.DataFrame(rows)
 
 
-def pace_by_horizon(table: pd.DataFrame) -> pd.DataFrame:
-    """The pace ratio's distribution over forecasts, for all horizons and for each."""
-    per_forecast = table.drop_duplicates(["instance", "project", "cutoff", "horizon_days"])
+def pace_distribution(table: pd.DataFrame) -> pd.DataFrame:
+    """The pace ratio's quantiles over forecasts, for all horizons and for each."""
+    per_forecast = table.drop_duplicates(KEYS)
     groups = [("all", per_forecast["pace_ratio"])]
     groups += [(str(h), g["pace_ratio"]) for h, g in per_forecast.groupby("horizon_days")]
     rows = []
@@ -234,23 +283,16 @@ def main() -> int:
         return 1
     print(f"windows and cutoffs match {backtest.FROZEN.name} for all {len(frozen)} projects")
 
-    blocks = run_blocks(frozen)
-    keys = ["instance", "project", "cutoff", "horizon_days"]
-    pace = blocks.drop_duplicates(keys)[[*keys, "pace_ratio"]]
-    results = pd.read_parquet(HERE / "data" / "results.parquet")
-    table = pd.concat([baselines(results, pace), blocks], ignore_index=True)
-    table["experimental"] = table["method"].isin(EXPERIMENTAL)
+    table = assemble(run(frozen), pd.read_parquet(HERE / "data" / "results.parquet"))
     table.to_parquet(HERE / "data" / "experiment_3b.parquet", index=False, compression="zstd")
-
     verdict = pass_test(table)
-    distribution, by_method = pace_shift(table)
-    verdict.merge(by_method.drop(columns="label"), on="method").round(4).to_csv(
-        HERE / "data" / "experiment_3b_summary.csv", index=False
-    )
-    horizons = pace_by_horizon(table)
-    horizons.round(4).to_csv(HERE / "data" / "experiment_3b_pace.csv", index=False)
+    verdict.round(4).to_csv(HERE / "data" / "experiment_3b_summary.csv", index=False)
+    diagnostic = pace_shift(table)
+    diagnostic.round(4).to_csv(HERE / "data" / "experiment_3b_pace.csv", index=False)
+    pace_distribution(table).round(4).to_csv(HERE / "data" / "experiment_3b_pace_distribution.csv", index=False)
 
-    print(f"{len(table):,} rows ({len(blocks):,} block forecasts + {len(table) - len(blocks):,} baseline) -> data/experiment_3b.parquet\n")
+    print(f"{len(table):,} rows, {len(table) // len(METHODS):,} forecasts per method -> data/experiment_3b.parquet")
+    print("the raw day-bucket forecasts regenerated here are identical to Session 3's\n")
     print(f"Pass test: P85 in {P85_RANGE[0]:.0%}-{P85_RANGE[1]:.0%}; outer tenths <= {OUTER_TENTHS_MAX:.0%}; mean CRPS <= {CRPS_MAX:g}")
     for r in verdict.itertuples():
         marks = "  ".join(
@@ -262,13 +304,12 @@ def main() -> int:
             f"outer tenths {r.outer_tenths:.1%} ({r.bottom_tenth:.1%} + {r.top_tenth:.1%}) | CRPS {r.mean_crps:.1f} | "
             f"{marks} -> {'PASSES' if r.passes else 'does not pass'}"
         )
-    print("\nPace shift (horizon daily rate / history daily rate), one value per forecast:")
-    print(f"  {distribution['shifted']:.1%} of forecasts are below {PACE_LOW} or above {PACE_HIGH}")
-    print(horizons.round(3).to_string(index=False))
-    for r in by_method.itertuples():
+    print(f"\nPace shift: share of forecasts whose horizon ran below {PACE_LOW} or above {PACE_HIGH} times the history's daily rate")
+    print("  observed, against what each method's own simulated outcomes expected")
+    for r in diagnostic.itertuples():
         print(
-            f"  {r.label:<37} {r.outer_tenth_misses:>5} outer-tenth misses; {r.misses_with_pace_shift:.1%} of them had a "
-            f"pace shift, against {r.others_with_pace_shift:.1%} of the other forecasts"
+            f"  {r.horizon_days // 7:>2} weeks  {r.label:<34} observed {r.observed_shift:.1%}  "
+            f"expected {r.expected_shift:.1%}  excess {r.excess_shift:+.1%}"
         )
     return 0
 

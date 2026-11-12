@@ -137,47 +137,51 @@ What it shows:
 - **Across projects:** 2 of 24 are inside the P85 pass mark with 14-day blocks
   and 3 with 28-day, against 3 for raw day buckets and 5 as shipped.
 
-### Pace-shift diagnostic (descriptive)
+### Pace-shift diagnostic (descriptive only, revised)
 
-The ratio is each forecast's horizon daily rate divided by the daily rate of
-its 26-week history; one value per project, cutoff and horizon (3,264).
+The pace ratio is each forecast's horizon daily rate divided by the daily rate
+of its 26-week history. A shift is a ratio below 0.8 or above 1.25.
 
-| Horizon | 5% | 15% | 25% | Median | 75% | 85% | 95% | Below 0.8 | Above 1.25 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| All | 0.46 | 0.63 | 0.74 | 0.93 | 1.15 | 1.31 | 1.70 | 32% | 18% |
-| 2 weeks | 0.42 | 0.59 | 0.69 | 0.91 | 1.16 | 1.32 | 1.67 | 37% | 20% |
-| 4 weeks | 0.45 | 0.63 | 0.74 | 0.93 | 1.14 | 1.30 | 1.69 | 34% | 18% |
-| 8 weeks | 0.48 | 0.65 | 0.77 | 0.93 | 1.15 | 1.29 | 1.72 | 29% | 17% |
-| 12 weeks | 0.48 | 0.67 | 0.78 | 0.93 | 1.14 | 1.32 | 1.70 | 29% | 18% |
+- **Observed:** the share of forecasts whose actual ratio is a shift.
+- **Expected:** the same share across each forecast's own 10,000 simulated
+  totals, averaged over forecasts. It is how often such a swing would happen
+  if the method's model of variation were right.
+- **Excess:** observed minus expected.
 
-Half of all forecasts (50.6%) saw the pace fall below 0.8 or rise above 1.25
-times the recent rate; 47% still did at 12 weeks.
+816 forecasts per horizon; the observed share is the same for every method.
 
-Share of outer-tenth misses with a ratio below 0.8 or above 1.25:
+| Horizon | Observed | Expected: day buckets | Excess | Expected: 14-day blocks | Excess | Expected: 28-day blocks | Excess |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2 weeks | 57.0% | 40.5% | +16.5 | 49.1% | +7.8 | 48.8% | +8.1 |
+| 4 weeks | 52.2% | 26.2% | +26.0 | 35.0% | +17.2 | 40.5% | +11.7 |
+| 8 weeks | 46.1% | 14.3% | +31.8 | 21.7% | +24.4 | 25.3% | +20.8 |
+| 12 weeks | 46.9% | 9.2% | +37.7 | 15.0% | +31.9 | 18.2% | +28.8 |
 
-| Method | Outer-tenth misses | Of them, with a pace shift | Of the other forecasts |
-|---|---:|---:|---:|
-| Day buckets, as shipped | 1,828 | 72% | 23% |
-| Day buckets, raw | 1,646 | 84% | 17% |
-| 14-day blocks, raw | 1,418 | 86% | 24% |
-| 28-day blocks, raw | 1,379 | 84% | 26% |
+All methods are on raw history. Excess is in percentage points.
 
-How to read it:
+- **Teams change pace far more than resampling expects.** Over 12 weeks the
+  pace shifted in 47% of forecasts; single-day resampling expected 9%.
+- **Blocks expect more shifts but leave most of the excess.** At 12 weeks the
+  excess falls from 38 points to 32 (14-day) and 29 (28-day), a cut of 15% and
+  24%. At 8 weeks the cut is 23% and 35%.
+- **The plan's reading applies:** a large excess that blocks do not shrink
+  means teams change pace in ways no resampling of their past predicts.
+- **At 2 weeks chance swings dominate**, as the plan says: even single-day
+  resampling expects a shift 40% of the time. Read the 8- and 12-week rows.
+- The expected share falls with horizon for every method, because simulated
+  totals average out; the observed share barely falls after 8 weeks.
 
-- **The misses are pace changes.** About 84% of outer-tenth misses come with a
-  pace shift, whichever raw method is used.
-- **That share is partly true by construction.** An outer-tenth miss means the
-  actual was far from the forecast's centre, and the centre is the history
-  rate times the horizon, so a miss nearly implies a ratio far from 1. The
-  figure that stands on its own is the distribution: the pace of the next
-  2 to 12 weeks differs from the last 26 by more than 20–25% half the time.
-- **What that implies for any resampling fix.** In 15% of forecasts the
-  project ran at under 63% of its recent pace. A P85 forecast that held 85% of
-  the time would have to sit that low, which no reshuffling of the last 26
-  weeks produces. This is an inference from the table, not something the
-  experiment tested.
-- The median ratio is 0.93: these projects ran about 7% slower in the horizon
-  than in the history, which is the same upward bias as the raw forecast's.
+Supporting detail, in `data/experiment_3b_pace_distribution.csv`: the ratio's
+median is 0.93 and its middle half runs from 0.74 to 1.15. The median below 1
+means these projects ran about 7% slower in the horizon than in the history,
+the same upward bias the raw forecast has.
+
+**History of the diagnostic.** The first run of 3b (commit `766abce`) computed
+the plan's first version: the share of outer-tenth misses that came with a
+shift. That figure is circular, since a miss is nearly by definition a result
+far from the history rate, so the plan replaced it with the version above and
+the figure is no longer computed. The variants, settings, pass test and every
+score are unchanged between the two runs.
 
 ## Decisions
 
@@ -232,8 +236,13 @@ a MonteJiraSim checkout, against that commit byte for byte. It also vendors
   full results table are identical to that again.
 - The results table has 39,168 rows, 1,632 per project, no nulls, and the four
   amounts are ordered in every row.
-- 40 tests pass: replay wiring, the frozen-window gate, the summaries, the
-  engine snapshot, and the block sampler and its reporting. Ruff is clean.
+- 45 tests pass: replay wiring, the frozen-window gate, the summaries, the
+  engine snapshot, and the block sampler, pass test and diagnostic. Ruff is
+  clean.
+- For the diagnostic, Session 3's raw day-bucket forecasts are regenerated
+  from the same engine call and random stream, and `experiment_3b.py` stops if
+  they are not identical to the rows in `results.parquet`. They are. Scores for
+  the block variants are identical between the two 3b runs.
 - Session 3b: the frozen-window gate passed again before the run. Scoring was
   moved into one function (`replay.score`) so the experiment is scored by the
   same code; re-running the Session 3 backtest afterwards reproduced
@@ -261,8 +270,8 @@ From the plan: the "where it breaks" chart (#4), the shareable page, the
 LinkedIn post draft, and this repository made public.
 
 Experiment 3b is part of the story: the plan says to publish that neither
-block length passed, with the pace-shift table as the reason resampling the
-past has a ceiling. Everywhere it appears it has to be labelled as experiment
+block length passed, with the observed-against-expected pace-shift table as
+the reason resampling the past has a ceiling. Everywhere it appears it has to be labelled as experiment
 code, not FlowAugur's engine.
 
 Material for "where it breaks":
@@ -317,6 +326,9 @@ Full list in the README. The ones most likely to bite:
 
 - The plan doc was not edited in Session 3b. Its 3b pass test says "from 51%
   raw"; the exact figure is 50.4%, so that should read 50%.
+- The plan heads the revised diagnostic "before any 3b results". In this
+  repository's history the first version's figures come first (`766abce`), so
+  the two do not match as worded.
 - Chart #4 ("where it breaks"), the shareable page and the post are Session 4.
 - No batchy projects were added; that would need its own filter, fixed before
   looking at results.

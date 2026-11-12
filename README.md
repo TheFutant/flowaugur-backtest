@@ -79,16 +79,25 @@ length passes.
 
 ![Calibration plot with block resampling](figures/calibration_3b.png)
 
-Why resampling the past cannot close the gap: **the pace itself changes.**
-Dividing each horizon's daily rate by the daily rate of the 26 weeks before it
-gives a median of 0.93 and a middle half of 0.74 to 1.15. In half of all
-forecasts (51%) the pace fell below 0.8 or rose above 1.25 times the recent
-rate, and that is still true of 47% at the 12-week horizon. Of the forecasts
-whose result landed in an outer tenth, 84% had such a pace shift (raw day
-buckets), against 17% of the rest. That last figure is partly true by
-construction, since a result far from the forecast is a pace far from the
-history; the first one is the finding. A forecast built only from how fast the
-team went recently is confident about a pace that often does not hold.
+Why resampling the past cannot close the gap: **teams change pace more than
+their own history suggests.** For each forecast, divide the horizon's daily
+rate by the daily rate of the 26 weeks before it, and call a result below 0.8
+or above 1.25 a pace shift. The table sets how often that happened against how
+often each method's own simulated outcomes expected it.
+
+| Horizon | Pace shifted | Expected by single days | by 14-day blocks | by 28-day blocks |
+|---|---:|---:|---:|---:|
+| 2 weeks | 57% | 40% | 49% | 49% |
+| 4 weeks | 52% | 26% | 35% | 40% |
+| 8 weeks | 46% | 14% | 22% | 25% |
+| 12 weeks | 47% | 9% | 15% | 18% |
+
+Over 12 weeks the pace shifted in 47% of forecasts. Resampling single days
+expected that 9% of the time, and block resampling 15% to 18%. Blocks close
+about a sixth to a quarter of that gap and leave the rest. At 2 weeks chance
+swings dominate; the 8- and 12-week rows are the ones to read. A forecast
+built only from how fast the team went recently is confident about a pace
+that often does not hold.
 
 ## The engine
 
@@ -193,9 +202,10 @@ of `charts.py`.
 | `frozen_windows.csv` | 24 | 2 KB | The 24 projects with their window and first and last cutoff, fixed before the run |
 | `results.parquet` | 39,168 | 1.1 MB | Every scored forecast: the results table |
 | `project_summary.csv` | 24 | 3 KB | Per project: window, detected cadence, and how often each band held |
-| `experiment_3b.parquet` | 13,056 | 0.4 MB | Experiment 3b: the two block-resampling variants and the two Session 3 baselines, scored, with each forecast's pace ratio |
+| `experiment_3b.parquet` | 13,056 | 0.4 MB | Experiment 3b: the two block-resampling variants and the two Session 3 baselines, scored, with each forecast's pace ratio and expected shift share |
 | `experiment_3b_summary.csv` | 4 | 1 KB | Experiment 3b: each method against the pass test |
-| `experiment_3b_pace.csv` | 5 | 1 KB | Experiment 3b: the pace ratio's distribution, overall and by horizon |
+| `experiment_3b_pace.csv` | 12 | 1 KB | Experiment 3b: observed, expected and excess pace-shift share by horizon and method |
+| `experiment_3b_pace_distribution.csv` | 5 | 1 KB | Experiment 3b: the pace ratio's quantiles, overall and by horizon |
 
 In `figures/`:
 

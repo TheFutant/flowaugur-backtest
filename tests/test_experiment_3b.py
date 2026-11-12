@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 
 import experiment_3b as x
+import replay
 
 
 def _rng(seed: int = 0) -> np.random.Generator:
@@ -109,18 +110,10 @@ def test_streams_differ_by_project_cutoff_block_and_horizon() -> None:
         assert not np.array_equal(base, other.integers(0, 10**9, 5))
 
 
-# ---- the diagnostic and the pass test ---------------------------------------
+# ---- the pass test ----------------------------------------------------------
 
 
-def test_pace_ratio_is_horizon_rate_over_history_rate() -> None:
-    hist = pd.Series(np.full(182, 2.0))
-    assert x.pace_ratio(hist, 28, 14) == pytest.approx(1.0)
-    assert x.pace_ratio(hist, 56, 14) == pytest.approx(2.0)
-    assert x.pace_ratio(hist, 84, 84) == pytest.approx(0.5)
-    assert np.isnan(x.pace_ratio(pd.Series(np.zeros(182)), 5, 14))
-
-
-def _table(method: str, pit: list[float], hit_p85: list[bool], crps: float, ratio: list[float]) -> pd.DataFrame:
+def _table(method: str, pit: list[float], hit_p85: list[bool], crps: float, ratio: list[float], expected: float = 0.1) -> pd.DataFrame:
     n = len(pit)
     return pd.DataFrame(
         {
@@ -130,6 +123,7 @@ def _table(method: str, pit: list[float], hit_p85: list[bool], crps: float, rati
             "horizon_days": 14,
             "method": method,
             "pace_ratio": ratio,
+            "expected_shift": expected,
             "pit": pit,
             "crps": crps,
             "hit_p50": True,
@@ -156,29 +150,108 @@ def test_pass_test_needs_all_three_and_uses_the_declared_thresholds() -> None:
     assert verdict.loc["shipped", ["crps_ok", "passes"]].tolist() == [False, False]  # 64.1 is over 64
 
 
-def test_pace_shift_counts_misses_outside_the_declared_ratio_band() -> None:
-    #            miss low  miss hi  miss, steady  fine, shifted  fine, steady x2
-    pit = [0.05, 0.95, 0.02, 0.5, 0.5, 0.5]
-    ratio = [0.7, 1.3, 1.0, 1.26, 1.0, 0.8]
-    table = pd.concat([_table(m, pit, [True] * 6, 60.0, ratio) for m in x.METHODS])
-    distribution, by_method = x.pace_shift(table)
-
-    assert distribution["forecasts"] == 6  # one ratio per forecast, not per method
-    assert distribution["below_0.8"] == pytest.approx(1 / 6)  # 0.8 itself is not below 0.8
-    assert distribution["above_1.25"] == pytest.approx(2 / 6)
-    assert distribution["shifted"] == pytest.approx(3 / 6)
-    row = by_method.set_index("method").loc["block14"]
-    assert row["outer_tenth_misses"] == 3
-    assert row["misses_with_pace_shift"] == pytest.approx(2 / 3)
-    assert row["others_with_pace_shift"] == pytest.approx(1 / 3)
+# ---- the pace-shift diagnostic ----------------------------------------------
 
 
-def test_pace_by_horizon_reports_all_horizons_then_each() -> None:
+def test_pace_ratio_is_horizon_rate_over_history_rate() -> None:
+    hist = pd.Series(np.full(182, 2.0))
+    assert x.pace_ratio(hist, 28, 14) == pytest.approx(1.0)
+    assert x.pace_ratio(hist, 56, 14) == pytest.approx(2.0)
+    assert x.pace_ratio(hist, 84, 84) == pytest.approx(0.5)
+    assert np.isnan(x.pace_ratio(pd.Series(np.zeros(182)), 5, 14))
+
+
+def test_a_shift_is_strictly_outside_the_declared_band() -> None:
+    ratios = np.array([0.79, 0.8, 1.0, 1.25, 1.26])
+    assert x.is_shift(ratios).tolist() == [True, False, False, False, True]
+
+
+def test_expected_shift_is_the_share_of_a_forecasts_own_trials_that_shift() -> None:
+    hist = pd.Series(np.full(182, 2.0))  # 2 a day, so 28 over a 14-day horizon is a ratio of 1
+    #                  1.0   0.75  1.29  0.82  1.21
+    totals = np.array([28.0, 21.0, 36.0, 23.0, 34.0])
+    assert x.expected_shift(hist, totals, 14) == pytest.approx(2 / 5)
+    assert x.expected_shift(hist, np.full(100, 28.0), 14) == 0.0
+    assert np.isnan(x.expected_shift(pd.Series(np.zeros(182)), totals, 14))
+
+
+def test_expected_shift_matches_the_sampler_it_is_given() -> None:
+    # Quiet then busy: block totals swing far more than day totals, so far more of them shift.
+    hist = pd.Series(np.concatenate([np.zeros(91), np.full(91, 10.0)]))
+    blocks = x.block_totals(hist.to_numpy(), 14, 14, 20_000, _rng(1))
+    days = _rng(2).choice(hist.to_numpy(), size=(20_000, 14)).sum(axis=1)
+    assert x.expected_shift(hist, blocks, 14) > 0.9
+    assert x.expected_shift(hist, days, 14) < x.expected_shift(hist, blocks, 14) - 0.2
+
+
+def test_pace_shift_is_observed_minus_expected_by_horizon_and_method() -> None:
+    ratio = [0.7, 1.0, 1.0, 1.3]  # two of four forecasts shifted
+    frames = [_table(m, [0.5] * 4, [True] * 4, 60.0, ratio, expected=e) for m, e in (("raw", 0.1), ("block14", 0.2), ("block28", 0.3), ("shipped", 0.9))]
+    table = pd.concat(frames)
+    later = table.assign(horizon_days=84, pace_ratio=1.0)  # nobody shifted at 12 weeks
+    out = x.pace_shift(pd.concat([table, later])).set_index(["horizon_days", "method"])
+
+    assert list(out.index) == [(h, m) for h in (14, 84) for m in ("raw", "block14", "block28")]  # as shipped is not in it
+    assert out["forecasts"].tolist() == [4] * 6
+    assert out.loc[14, "observed_shift"].tolist() == [0.5, 0.5, 0.5]  # the same actuals for every method
+    assert out.loc[14, "expected_shift"].tolist() == pytest.approx([0.1, 0.2, 0.3])
+    assert out.loc[14, "excess_shift"].tolist() == pytest.approx([0.4, 0.3, 0.2])
+    assert out.loc[84, "excess_shift"].tolist() == pytest.approx([-0.1, -0.2, -0.3])
+
+
+def test_pace_distribution_reports_all_horizons_then_each() -> None:
     table = pd.concat([_table(m, [0.5] * 4, [True] * 4, 60.0, [0.5, 1.0, 1.0, 1.5]) for m in x.METHODS])
     table["horizon_days"] = [14, 14, 28, 28] * len(x.METHODS)
-    out = x.pace_by_horizon(table).set_index("horizon_days")
+    out = x.pace_distribution(table).set_index("horizon_days")
     assert list(out.index) == ["all", "14", "28"]
     assert out["forecasts"].tolist() == [4, 2, 2]
     assert out.loc["all", "p50"] == pytest.approx(1.0)
     assert out.loc["14", "below_0.8"] == pytest.approx(0.5)
     assert out.loc["28", "above_1.25"] == pytest.approx(0.5)
+
+
+# ---- assembling the table ---------------------------------------------------
+
+
+def _scored(method: str, crps: float) -> pd.DataFrame:
+    frame = pd.DataFrame(
+        {
+            "instance": "Demo",
+            "project": "A",
+            "cutoff": pd.date_range("2020-01-06", periods=2, freq="14D").date,
+            "horizon_days": 14,
+            "method": method,
+            "actual": 10,
+            "mean": 9.5,
+        }
+    )
+    for column in replay.SCORE_COLUMNS:
+        frame[column] = column.startswith("hit_") or crps
+    return frame
+
+
+def _session_3_results(raw_crps: float) -> pd.DataFrame:
+    frames = []
+    for method, drop, crps in (("raw", False, raw_crps), ("shipped", True, 7.0)):
+        frames.append(_scored(method, crps).drop(columns="method").assign(bucket="day", history_days=182, outlier_drop=drop))
+    return pd.concat(frames, ignore_index=True)
+
+
+def _simulated() -> pd.DataFrame:
+    frames = [_scored(m, c).assign(pace_ratio=1.1, expected_shift=0.05) for m, c in (("raw", 5.0), ("block14", 4.0), ("block28", 4.5))]
+    return pd.concat(frames, ignore_index=True)
+
+
+def test_assemble_joins_the_four_methods_and_flags_the_experiment() -> None:
+    table = x.assemble(_simulated(), _session_3_results(raw_crps=5.0))
+    assert list(dict.fromkeys(table["method"])) == list(x.METHODS)
+    assert table.groupby("method").size().tolist() == [2, 2, 2, 2]
+    assert table.loc[table["experimental"], "method"].unique().tolist() == ["block14", "block28"]
+    shipped = table[table["method"] == "shipped"]
+    assert (shipped["pace_ratio"] == 1.1).all()  # the actuals' ratio, whatever the method
+    assert shipped["expected_shift"].isna().all()  # as shipped is not part of the diagnostic
+
+
+def test_assemble_refuses_raw_forecasts_that_are_not_session_3s() -> None:
+    with pytest.raises(RuntimeError, match="differ from data/results.parquet"):
+        x.assemble(_simulated(), _session_3_results(raw_crps=5.5))
