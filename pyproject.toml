@@ -1,0 +1,34 @@
+[project]
+name = "flowaugur-backtest"
+version = "0.1.0"
+description = "Replays FlowAugur's throughput Monte Carlo forecasts on public Jira history and scores them."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+# numpy, pandas and pyarrow are pinned to the versions the FlowAugur app locks,
+# so the vendored engine runs on the libraries it runs on in production.
+dependencies = [
+    "numpy==2.5.3",
+    "pandas==3.0.5",
+    "pyarrow==24.0.0",
+    "matplotlib>=3.9",
+]
+
+[dependency-groups]
+# ruff is pinned to the version the FlowAugur app's lint job uses.
+dev = ["pytest>=8", "ruff==0.15.17"]
+# Only extract_done_dates.py needs this, to read BSON out of the dataset's dump.
+extract = ["pymongo>=4.9"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py312"
+# Verbatim copies of the app's code: linted in their home repository, never edited here.
+extend-exclude = ["engine/metrics.py", "engine/simulate.py"]

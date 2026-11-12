@@ -1,0 +1,757 @@
+instance,status_id,status,status_category,source,n_issues,n_transitions_into,share_setting_resolution
+Apache,5,Resolved,done,current,377005,659229,0.9928
+Apache,6,Closed,done,current,455431,474377,0.4451
+Apache,,RESOLVED,done,name,0,3887,0.0
+Apache,10017,Done,done,current,2983,3103,0.8772
+Apache,10021,Pending Closed,done,resolution,0,527,0.8824
+Apache,,CLOSED,done,name,0,437,0.0
+Apache,10424,Verified,done,current,2,4,0.0
+Apache,10002,Patch Available,indeterminate,current,6071,187523,0.0
+Apache,3,In Progress,indeterminate,current,4946,154481,0.0
+Apache,10020,Accepted,indeterminate,current,842,8719,0.0
+Apache,10010,Waiting for user,indeterminate,current,32,8715,0.0
+Apache,10221,Ready to Commit,indeterminate,current,6,2420,0.0
+Apache,10723,Review In Progress,indeterminate,current,25,1591,0.0
+Apache,10001,In Review,indeterminate,current,18,677,0.0
+Apache,10018,In Review,indeterminate,current,47,625,0.0
+Apache,10000,Patch Available,indeterminate,current,13,381,0.0
+Apache,10222,Awaiting Feedback,indeterminate,current,36,312,0.0
+Apache,10000,On Hold,indeterminate,current,13,123,0.0
+Apache,10005,In Review,indeterminate,name,0,108,0.0
+Apache,10521,For Review,indeterminate,current,13,60,0.0
+Apache,10001,Continued,indeterminate,current,18,40,0.0
+Apache,10004,In Review,indeterminate,name,0,36,0.0
+Apache,10000,Blocked,indeterminate,current,13,33,0.0
+Apache,10014,Requires Porting,indeterminate,current,1,6,0.0
+Apache,10000,Done,indeterminate,current,13,4,0.0
+Apache,10427,Started,indeterminate,current,1,4,0.0
+Apache,10001,To Do,indeterminate,current,18,0,0.0
+Apache,10002,To Do,indeterminate,current,6071,0,0.0
+Apache,1,Open,new,current,160578,68465,0.0
+Apache,4,Reopened,new,current,3319,54605,0.0
+Apache,10006,Reviewable,new,current,258,8292,0.0
+Apache,10011,Waiting for Infra,new,current,78,4206,0.0
+Apache,,OPEN,new,name,0,1810,0.0
+Apache,10006,Ready To Review,new,current,258,1025,0.0
+Apache,10008,To Do,new,name,0,785,0.0
+Apache,10722,Triage Needed,new,current,653,527,0.0
+Apache,10019,To Do,new,current,2526,218,0.0
+Apache,10724,Changes Suggested,new,current,12,174,0.0
+Apache,11021,Needs Committer,new,current,3,36,0.0
+Apache,10722,Triage,new,current,653,34,0.0
+Apache,11021,Needs Reviewer,new,current,3,34,0.0
+Apache,10721,on hold,new,current,5,33,0.0
+Apache,1,Unassigned,new,current,160578,28,0.0
+Apache,10006,Done,new,current,258,20,0.0
+Apache,10621,Idea,new,current,1,5,0.0
+Apache,10724,Change Requested,new,current,12,3,0.0
+Apache,10013,Unknown,new,current,4,0,
+Apache,10013,Unkown,new,current,4,0,
+Apache,2,Assigned,unknown,unknown,0,183,0.0
+Apache,10012,Testing,unknown,unknown,0,123,0.0
+Apache,10323,New,unknown,unknown,0,53,0.0
+Apache,10007,Documentation Required,unknown,unknown,0,43,0.0
+Apache,10725,Requires Testing,unknown,unknown,0,12,0.0
+Apache,10623,Under Discussion,unknown,unknown,0,8,0.0
+Apache,10009,Documentation/Testcases Required,unknown,unknown,0,7,0.0
+Apache,10625,In Implementation,unknown,unknown,0,4,0.0
+Apache,10008,Testcases Required,unknown,unknown,0,2,0.0
+Apache,10003,Patch Reviewed,unknown,unknown,0,1,0.0
+Apache,10015,Not Applicable,unknown,unknown,0,1,0.0
+Apache,10016,Ported,unknown,unknown,0,1,0.0
+Apache,10622,Abandoned,unknown,unknown,0,1,0.0
+Apache,10821,For Review - 2,unknown,unknown,0,1,0.0
+Apache,10324,Fixed,unknown,unknown,0,0,
+Apache,10421,Invalid,unknown,unknown,0,0,
+Apache,10422,FixedInBranch,unknown,unknown,0,0,
+Apache,10423,Duplicate,unknown,unknown,0,0,
+Apache,10425,WontFix,unknown,unknown,0,0,
+Apache,10426,UnderReview,unknown,unknown,0,0,
+Hyperledger,6,Closed,done,current,18557,19014,0.5316
+Hyperledger,10001,Done,done,current,6602,14831,0.9207
+Hyperledger,10001,Complete,done,current,6602,2067,0.9207
+Hyperledger,10404,Invalid,done,current,87,801,0.2409
+Hyperledger,10801,Done,done,current,262,268,0.9888
+Hyperledger,10702,Duplicate,done,current,16,193,0.3523
+Hyperledger,10407,Won't Fix,done,current,16,149,0.0
+Hyperledger,3,In Progress,indeterminate,current,146,17065,0.0051
+Hyperledger,10708,In CR Review,indeterminate,current,51,7037,0.0
+Hyperledger,10002,In Review,indeterminate,current,36,6306,0.0
+Hyperledger,10400,Code Review,indeterminate,current,10,1091,0.0
+Hyperledger,10701,Returned,indeterminate,current,20,307,0.0195
+Hyperledger,10000,To Do,new,current,810,7031,0.0
+Hyperledger,10406,To Test,new,current,2,1241,0.0
+Hyperledger,10100,Backlog,new,current,814,1013,0.0
+Hyperledger,10405,To Develop,new,current,135,544,0.0
+Hyperledger,10300,Unverified,new,current,141,370,0.0
+Hyperledger,10802,Planning,new,current,1,185,0.0
+Hyperledger,10200,New,new,current,440,96,0.0
+Hyperledger,10500,Review,unknown,unknown,0,492,0.0
+Hyperledger,10601,Validate,unknown,unknown,0,466,0.0
+Hyperledger,10401,Customer Validation,unknown,unknown,0,285,0.0
+Hyperledger,10800,Selected for Development,unknown,unknown,0,69,0.0
+Hyperledger,10201,Monitor / On Hold,unknown,unknown,0,66,0.1212
+Hyperledger,10403,Icebox,unknown,unknown,0,17,0.0
+Hyperledger,10700,Blocked,unknown,unknown,0,9,0.0
+Hyperledger,10900,Scheduled for Work,unknown,unknown,0,9,0.0
+Hyperledger,10402,Design,unknown,unknown,0,8,0.0
+Hyperledger,11000,Tech Preview,unknown,unknown,0,5,0.0
+IntelDAOS,5,Resolved,done,current,8401,8923,0.8453
+IntelDAOS,6,Closed,done,builtin,0,1279,0.8812
+IntelDAOS,3,In Progress,indeterminate,current,111,4530,0.0
+IntelDAOS,10003,In Review,indeterminate,current,47,2937,0.0
+IntelDAOS,10002,Blocked,indeterminate,current,27,481,0.0
+IntelDAOS,10004,Awaiting Verification,indeterminate,current,13,299,0.0
+IntelDAOS,10000,To Do,new,current,51,1264,0.0
+IntelDAOS,4,Reopened,new,current,17,426,0.0
+IntelDAOS,1,Open,new,current,807,282,0.0
+IntelDAOS,10001,Waiting,unknown,unknown,0,1,0.0
+JFrog,5,Resolved,done,current,1545,8219,0.9682
+JFrog,10004,Done,done,current,6344,6443,0.0618
+JFrog,10507,Closed,done,current,2455,2542,0.9217
+JFrog,6,Will Not Implement,done,current,23,317,0.2657
+JFrog,6,Closed,done,current,23,97,0.2657
+JFrog,10003,To Do,done,current,1,2,0.3333
+JFrog,10004,Deployment Done,done,current,6344,2,0.0618
+JFrog,10003,Deferred,done,current,1,1,0.3333
+JFrog,10000,Pending QA,indeterminate,current,7,5908,0.0
+JFrog,3,In Progress,indeterminate,current,35,3239,0.0
+JFrog,4,Reopened,indeterminate,current,30,1354,0.0
+JFrog,10306,Ready For Merge,indeterminate,current,2,436,0.0
+JFrog,10604,Define,indeterminate,current,1,21,0.0
+JFrog,12703,Pause,indeterminate,current,7,20,0.0
+JFrog,12110,Development,indeterminate,current,4,13,0.0
+JFrog,10303,Ready for Code Review,new,current,5,705,0.0
+JFrog,1,Open,new,current,4997,649,0.0
+JFrog,10203,Backlog,new,current,77,148,0.0
+JFrog,11509,Ready For Dev,new,current,2,4,0.0
+JFrog,10002,QA in Progress,unknown,unknown,0,1549,0.0
+JFrog,10308,Ready for QA,unknown,unknown,0,9,0.0
+JFrog,11703,Selected for Dev,unknown,unknown,0,8,0.0
+JFrog,10703,Design,unknown,unknown,0,6,0.0
+JFrog,12105,Define Done,unknown,unknown,0,3,0.0
+JFrog,12107,UX Done,unknown,unknown,0,2,0.0
+JFrog,12108,Architecture,unknown,unknown,0,2,0.0
+JFrog,12111,Development Done,unknown,unknown,0,2,0.0
+JFrog,11410,Moved,unknown,unknown,0,1,0.0
+JFrog,12112,Deployed,unknown,unknown,0,1,0.0
+JFrog,11409,New,unknown,unknown,0,0,
+Jira,6,Closed,done,current,217588,272198,0.3101
+Jira,5,Resolved,done,current,59,163209,0.6387
+Jira,10044,Done,done,resolution,0,3456,0.8886
+Jira,10061,Resolved - pending deploy,done,resolution,0,255,0.9608
+Jira,11272,Deployed to Cloud,done,resolution,0,170,1.0
+Jira,12873,Published,done,current,96,110,0.9364
+Jira,3,In Progress,indeterminate,current,551,33812,0.0003
+Jira,12075,Waiting for Release,indeterminate,current,205,3078,0.0
+Jira,10064,Awaiting Merge,indeterminate,current,4,2085,0.0
+Jira,11372,Awaiting Release,indeterminate,current,1,1315,0.2958
+Jira,10051,In Review,indeterminate,current,25,1184,0.0
+Jira,12273,Waiting on Customer,indeterminate,current,1,1,0.0
+Jira,1,Open,new,current,235,45746,0.0
+Jira,11772,Gathering Interest,new,current,33647,42935,0.0
+Jira,12072,Gathering Impact,new,current,10319,25815,0.0
+Jira,10030,Needs Triage,new,current,5377,13350,0.0
+Jira,10004,Needs Verification,new,current,1,10300,0.0
+Jira,12073,Long Term Backlog,new,current,2374,5710,0.0
+Jira,12074,Short Term Backlog,new,current,896,3748,0.0
+Jira,11776,Not Being Considered,new,current,1715,3732,0.0
+Jira,4,Reopened,new,builtin,0,2912,0.0
+Jira,11773,Reviewing,new,current,379,1127,0.0
+Jira,11774,Under Consideration,new,current,383,1014,0.0
+Jira,11775,Future Consideration,new,current,422,930,0.0
+Jira,12373,Linguistic Backlog,new,current,10,408,0.0
+Jira,12472,Product Backlog,new,current,202,169,0.0
+Jira,10049,Ready for Development,new,current,3,167,0.0
+Jira,11374,Needs More Information,new,current,40,90,0.0
+Jira,12872,Draft,new,current,2,11,0.0
+Jira,1,Unassigned,new,current,235,8,0.0
+Jira,10030,Icebox,new,current,5377,0,0.0
+Jira,10005,Verified,unknown,unknown,0,15782,0.0
+Jira,10029,Quality Review,unknown,unknown,0,9883,0.0
+Jira,10026,To be reviewed,unknown,unknown,0,7220,0.0
+Jira,10039,Awaiting Quality Review,unknown,unknown,0,5832,0.0
+Jira,10028,Technical Review,unknown,unknown,0,5700,0.0
+Jira,10038,Awaiting Development,unknown,unknown,0,4411,0.0
+Jira,10006,Deployed,unknown,unknown,0,2814,0.0
+Jira,10040,Awaiting Deployment,unknown,unknown,0,2535,0.0
+Jira,10040,Awaiting Soak,unknown,unknown,0,1935,0.0
+Jira,10025,Implemented,unknown,unknown,0,1851,0.0
+Jira,10041,Soaking,unknown,unknown,0,1575,0.0
+Jira,10071,To Do,unknown,unknown,0,1471,0.0
+Jira,10041,Deployment,unknown,unknown,0,1068,0.0
+Jira,10017,Open - untriaged,unknown,unknown,0,668,0.0
+Jira,10035,Under Review,unknown,unknown,0,582,0.0
+Jira,10060,Accepted,unknown,unknown,0,466,0.0
+Jira,10001,ToDo,unknown,unknown,0,328,0.0
+Jira,2,Assigned,unknown,unknown,0,326,0.0
+Jira,10034,New,unknown,unknown,0,286,0.0
+Jira,11373,Released to Cloud,unknown,unknown,0,244,0.2377
+Jira,10002,Under Review,unknown,unknown,0,236,0.0
+Jira,10022,Ready for Web Release,unknown,unknown,0,191,0.0
+Jira,11572,Released to Server,unknown,unknown,0,189,0.1323
+Jira,10032,Short Term Roadmap,unknown,unknown,0,182,0.0
+Jira,10036,Deployed,unknown,unknown,0,167,0.0
+Jira,10001,On Hold,unknown,unknown,0,147,0.0
+Jira,10059,Open - untriaged,unknown,unknown,0,139,0.0
+Jira,10031,Long Term Roadmap,unknown,unknown,0,78,0.0
+Jira,11972,Triage,unknown,unknown,0,62,0.0
+Jira,10003,In QA Review,unknown,unknown,0,47,0.8085
+Jira,10057,Design in Progress,unknown,unknown,0,37,0.0
+Jira,10058,Design Backlog,unknown,unknown,0,32,0.0
+Jira,10272,Testing Notes,unknown,unknown,0,31,0.0
+Jira,10005,Waiting on Contegix,unknown,unknown,0,25,0.0
+Jira,11672,Untriaged,unknown,unknown,0,25,0.0
+Jira,10056,Awaiting Design Review,unknown,unknown,0,24,0.0
+Jira,10000,Done,unknown,unknown,0,16,0.4375
+Jira,10047,Selected for Development,unknown,unknown,0,15,0.0
+Jira,10015,Accepted,unknown,unknown,0,8,0.0
+Jira,10045,ToDo,unknown,unknown,0,5,0.0
+Jira,10053,Blocked/Awaiting External,unknown,unknown,0,5,0.0
+Jira,10172,Define,unknown,unknown,0,4,0.0
+Jira,10335,Waiting for Support,unknown,unknown,0,4,0.0
+Jira,10046,Backlog,unknown,unknown,0,3,0.0
+Jira,10010,Waiting for QA,unknown,unknown,0,2,1.0
+Jira,10033,Awaiting Review,unknown,unknown,0,2,0.0
+Jira,10068,Cancelled,unknown,unknown,0,2,0.5
+Jira,10173,Documentation,unknown,unknown,0,2,0.0
+Jira,10336,Waiting for Customer,unknown,unknown,0,2,0.0
+Jira,11973,Waiting for Dev Spt,unknown,unknown,0,2,0.0
+Jira,12700,Escalated,unknown,unknown,0,2,0.0
+Jira,11872,Blocked,unknown,unknown,0,1,0.0
+JiraEcosystem,6,Closed,done,current,32638,37564,0.3607
+JiraEcosystem,5,Resolved,done,current,2991,27717,0.88
+JiraEcosystem,10023,Done,done,current,658,1080,0.8704
+JiraEcosystem,14531,Not Being Considered,done,current,649,695,0.0
+JiraEcosystem,14034,Completed,done,current,367,395,0.7797
+JiraEcosystem,14134,Discarded,done,current,38,44,1.0
+JiraEcosystem,14251,Done,done,name,0,28,1.0
+JiraEcosystem,15107,Done,done,name,0,15,0.5333
+JiraEcosystem,14439,Closed,done,name,0,10,1.0
+JiraEcosystem,14451,Not being considered,done,name,0,5,0.0
+JiraEcosystem,14175,Done,done,name,0,1,1.0
+JiraEcosystem,3,In Progress,indeterminate,current,139,15424,0.0
+JiraEcosystem,10002,Under Review,indeterminate,current,180,11856,0.0
+JiraEcosystem,10027,Staging,indeterminate,current,1,2717,0.0
+JiraEcosystem,14239,Waiting for Release,indeterminate,current,42,1101,0.1026
+JiraEcosystem,14538,In Review,indeterminate,current,66,616,0.0
+JiraEcosystem,10935,Selected for Development,indeterminate,current,55,530,0.0
+JiraEcosystem,10003,Needs Verification,indeterminate,current,2,492,0.0
+JiraEcosystem,10003,Needs Verfication,indeterminate,current,2,301,0.0
+JiraEcosystem,10032,In Review,indeterminate,current,7,230,0.0
+JiraEcosystem,14135,Under peer review,indeterminate,current,2,209,0.0
+JiraEcosystem,10021,Needs Verfication,indeterminate,current,14,166,0.0
+JiraEcosystem,14250,In Progress,indeterminate,name,0,42,0.0
+JiraEcosystem,10032,Rolling Out,indeterminate,current,7,37,0.0
+JiraEcosystem,10735,Blocked Externally,indeterminate,current,3,36,0.0
+JiraEcosystem,14438,In progress,indeterminate,name,0,10,0.0
+JiraEcosystem,15106,In Progress,indeterminate,name,0,7,0.0
+JiraEcosystem,10003,Waiting for Dev Spt,indeterminate,current,2,5,0.0
+JiraEcosystem,10021,Needs Verification,indeterminate,current,14,2,0.0
+JiraEcosystem,10032,Reviewing Request,indeterminate,current,7,2,0.0
+JiraEcosystem,10002,Implemented,indeterminate,current,180,0,0.0
+JiraEcosystem,10003,To be reviewed,indeterminate,current,2,0,0.0
+JiraEcosystem,1,Open,new,current,1918,14064,0.0
+JiraEcosystem,10024,Backlog,new,current,19,1839,0.0005
+JiraEcosystem,10014,Triage,new,current,142,1169,0.0
+JiraEcosystem,14238,Short Term Backlog,new,current,128,853,0.0
+JiraEcosystem,10022,To Do,new,current,368,718,0.0
+JiraEcosystem,14236,Needs Triage,new,current,271,637,0.0
+JiraEcosystem,4,Reopened,new,current,12,599,0.0
+JiraEcosystem,14237,Gathering Interest,new,current,138,562,0.0
+JiraEcosystem,14359,Gathering Impact,new,current,461,470,0.0
+JiraEcosystem,14542,Reviewing,new,current,96,377,0.0
+JiraEcosystem,10025,Long Term Backlog,new,current,70,341,0.0
+JiraEcosystem,14130,To be done,new,current,173,293,0.0
+JiraEcosystem,11435,Verified,new,current,42,194,0.0
+JiraEcosystem,14793,Under Triage,new,current,35,176,0.0
+JiraEcosystem,10535,Ready for development,new,current,1,149,0.0
+JiraEcosystem,1,New,new,current,1918,101,0.0
+JiraEcosystem,10025,Implemented,new,current,70,75,0.0
+JiraEcosystem,14237,Gathering Impact,new,current,138,61,0.0
+JiraEcosystem,14252,To do,new,name,0,42,0.0
+JiraEcosystem,15078,Under Consideration,new,current,27,33,0.0
+JiraEcosystem,14131,Unclear,new,current,16,31,0.0
+JiraEcosystem,10535,QA kickoff,new,current,1,29,0.0
+JiraEcosystem,10022,Reviewing,new,current,368,25,0.0
+JiraEcosystem,14453,Gathering interest,new,name,0,19,0.0
+JiraEcosystem,15105,To Do,new,name,0,19,0.0
+JiraEcosystem,14237,Reviewing,new,current,138,15,0.0
+JiraEcosystem,14129,Awaiting triage,new,current,92,11,0.0
+JiraEcosystem,15079,Future consideration,new,current,5,5,0.0
+JiraEcosystem,14542,Gathering Interest,new,current,96,4,0.0
+JiraEcosystem,14437,Reviewing,new,name,0,1,0.0
+JiraEcosystem,10014,Backlog2,new,current,142,0,0.0
+JiraEcosystem,14173,To Do,new,name,0,0,
+JiraEcosystem,14296,To Do,new,name,0,0,
+JiraEcosystem,14599,To Do,new,name,0,0,
+JiraEcosystem,10000,Testing,unknown,unknown,0,2046,0.0
+JiraEcosystem,10004,Under Quality Review,unknown,unknown,0,542,0.0
+JiraEcosystem,10235,Ready for dev,unknown,unknown,0,448,0.0
+JiraEcosystem,10026,Finalise and Document,unknown,unknown,0,367,0.0
+JiraEcosystem,14132,In development,unknown,unknown,0,270,0.0
+JiraEcosystem,11535,Pony,unknown,unknown,0,258,0.0
+JiraEcosystem,10029,Testing,unknown,unknown,0,170,0.0
+JiraEcosystem,14133,Awaiting release,unknown,unknown,0,156,0.0
+JiraEcosystem,10001,On Hold,unknown,unknown,0,120,0.0
+JiraEcosystem,12337,Implemented,unknown,unknown,0,66,0.0
+JiraEcosystem,14001,Back Logged,unknown,unknown,0,55,0.0
+JiraEcosystem,14530,Internal Backlog,unknown,unknown,0,51,0.0
+JiraEcosystem,10001,To Consider,unknown,unknown,0,50,0.0
+JiraEcosystem,10011,Awaiting Development,unknown,unknown,0,49,0.0
+JiraEcosystem,12500,Triaged,unknown,unknown,0,45,0.0
+JiraEcosystem,10013,In Development,unknown,unknown,0,40,0.0
+JiraEcosystem,10026,To be reviewed,unknown,unknown,0,24,0.0
+JiraEcosystem,14452,Internal backlog,unknown,unknown,0,21,0.0
+JiraEcosystem,12500,niceToHave,unknown,unknown,0,20,0.0
+JiraEcosystem,10031,Design Review,unknown,unknown,0,15,0.0
+JiraEcosystem,10335,Waiting for Support,unknown,unknown,0,13,0.0
+JiraEcosystem,10836,Atlassian Investigating,unknown,unknown,0,9,0.0
+JiraEcosystem,10837,Awaiting Deployment,unknown,unknown,0,9,0.0
+JiraEcosystem,11235,Dogfooding,unknown,unknown,0,9,0.0
+JiraEcosystem,12338,To Be Reviewed,unknown,unknown,0,8,0.0
+JiraEcosystem,14249,Feedback,unknown,unknown,0,5,0.0
+JiraEcosystem,10034,Waiting,unknown,unknown,0,4,0.0
+JiraEcosystem,10336,Waiting for Customer,unknown,unknown,0,3,0.0
+JiraEcosystem,11735,Validation Required,unknown,unknown,0,3,0.0
+JiraEcosystem,14249,Needs review,unknown,unknown,0,3,0.0
+JiraEcosystem,11635,Validating,unknown,unknown,0,2,0.0
+JiraEcosystem,12700,Escalated,unknown,unknown,0,2,0.0
+JiraEcosystem,10010,Awaiting Design Input,unknown,unknown,0,1,0.0
+JiraEcosystem,10035,Setup,unknown,unknown,0,1,0.0
+JiraEcosystem,11835,Announcement Required,unknown,unknown,0,1,0.0
+JiraEcosystem,13200,Waiting for Atlassian,unknown,unknown,0,1,0.0
+JiraEcosystem,14363,0. Dev Backlog,unknown,unknown,0,1,0.0
+JiraEcosystem,14452,IN BACKLOG,unknown,unknown,0,1,0.0
+JiraEcosystem,14118,Untriaged,unknown,unknown,0,0,
+JiraEcosystem,14446,0. Untriaged,unknown,unknown,0,0,
+MariaDB,6,Closed,done,current,23202,24333,0.993
+MariaDB,5,Resolved,done,builtin,0,119,0.8739
+MariaDB,10001,Done,done,current,104,113,0.0265
+MariaDB,6,Fixed,done,current,23202,9,0.993
+MariaDB,3,In Progress,indeterminate,current,277,13223,0.0
+MariaDB,10000,Stalled,indeterminate,current,462,6419,0.0
+MariaDB,10002,In Review,indeterminate,current,128,5391,0.0
+MariaDB,10101,Confirmed,indeterminate,current,644,3054,0.0
+MariaDB,10301,In Testing,indeterminate,current,4,1318,0.0
+MariaDB,10301,Install tested,indeterminate,current,4,6,0.0
+MariaDB,10101,Code merged,indeterminate,current,644,1,0.0
+MariaDB,10000,Re-Opened,indeterminate,current,462,0,0.0
+MariaDB,4,Reopened,new,builtin,0,1238,0.0
+MariaDB,1,Open,new,current,6305,1167,0.0
+MariaDB,10003,To Do,new,current,102,9,0.0
+MariaDB,1,New release,new,current,6305,0,0.0
+MariaDB,10501,Needs Feedback,unknown,unknown,0,193,0.0
+MariaDB,10102,Verified,unknown,unknown,0,63,0.0
+MariaDB,10204,Selected for Development,unknown,unknown,0,2,0.0
+MariaDB,10203,Backlog,unknown,unknown,0,1,0.0
+Mindville,5,Resolved,done,current,419,480,1.0
+Mindville,6,Closed,done,current,197,207,0.7971
+Mindville,3,In Progress,indeterminate,current,8,212,0.0
+Mindville,1,Open,new,current,1503,472,0.0
+Mindville,4,Reopened,new,current,7,29,0.0
+Mindville,10100,Backlog,unknown,unknown,0,463,0.0
+Mindville,10000,To Do,unknown,unknown,0,0,
+Mojang,5,Resolved,done,current,406211,504516,0.951
+Mojang,6,Closed,done,current,279,892,0.2309
+Mojang,3,In Progress,indeterminate,current,6,2279,0.0
+Mojang,10200,Postponed,indeterminate,current,3,482,0.0
+Mojang,1,Open,new,current,10816,153279,0.0
+Mojang,4,Reopened,new,current,3499,106317,0.0
+MongoDB,6,Closed,done,current,120360,121682,0.6856
+MongoDB,5,Resolved,done,current,1988,41538,0.9688
+MongoDB,5,Completed,done,current,1988,1,0.9688
+MongoDB,3,In Progress,indeterminate,current,175,59034,0.0
+MongoDB,10018,In Code Review,indeterminate,current,191,57084,0.0
+MongoDB,11262,Investigating,indeterminate,current,117,8570,0.0
+MongoDB,10019,Waiting For User Input,indeterminate,current,10,5108,0.0
+MongoDB,10953,Waiting (Blocked),indeterminate,current,487,4411,0.0
+MongoDB,11156,Waiting for Reporter,indeterminate,current,8,1518,0.0
+MongoDB,11050,External Review,indeterminate,current,9,1498,0.0
+MongoDB,10951,Internal Review,indeterminate,current,13,1114,0.0
+MongoDB,10150,Debugging With Submitter,indeterminate,current,9,424,0.0
+MongoDB,13453,Implementing,indeterminate,current,145,278,0.0
+MongoDB,12650,Needs Review,indeterminate,current,2,170,0.0
+MongoDB,10453,Designing,indeterminate,current,2,79,0.0
+MongoDB,10451,Scoping,indeterminate,current,2,68,0.0
+MongoDB,10046,In Review,indeterminate,current,2,51,0.0
+MongoDB,10451,Needs Scope Approval,indeterminate,current,2,3,0.0
+MongoDB,10453,Needs Design Approval,indeterminate,current,2,2,0.0
+MongoDB,10453,Needs Spec/POC Approval,indeterminate,current,2,2,0.0
+MongoDB,3,abstract,indeterminate,current,175,2,0.0
+MongoDB,3,Dry Run,indeterminate,current,175,0,0.0
+MongoDB,1,Open,new,current,12068,74939,0.0
+MongoDB,12452,Needs Scheduling,new,current,117,30221,0.0
+MongoDB,11263,Scheduled,new,current,93,7803,0.0
+MongoDB,10049,Needs Triage,new,current,708,3446,0.0
+MongoDB,10033,Blocked,new,current,98,1251,0.0
+MongoDB,10045,Ready for Work,new,current,24,1117,0.0
+MongoDB,4,Reopened,new,builtin,0,1106,0.0
+MongoDB,11251,Accepted,new,current,258,650,0.0
+MongoDB,11253,Debugging,new,current,4,425,0.0
+MongoDB,10038,Backlog,new,current,238,350,0.0
+MongoDB,12450,Needs Verification,new,current,7,258,0.0
+MongoDB,10450,Needs Scope,new,current,7,156,0.0
+MongoDB,10452,Needs Design,new,current,8,89,0.0
+MongoDB,1,Request Submitted,new,current,12068,2,0.0
+MongoDB,10045,Ready to Implement,new,current,24,2,0.0
+MongoDB,10452,Needs Spec/POC,new,current,8,2,0.0
+MongoDB,10026,Needs Merge,unknown,unknown,0,3977,0.0
+MongoDB,10152,Requires Specification,unknown,unknown,0,102,0.0
+MongoDB,10034,Researching,unknown,unknown,0,99,0.0
+MongoDB,10153,Blocked on Server,unknown,unknown,0,94,0.0
+MongoDB,10025,Needs Reviewer,unknown,unknown,0,74,0.0
+MongoDB,10008,Waiting for Verification,unknown,unknown,0,69,0.0
+MongoDB,12350,Needs Validation,unknown,unknown,0,49,0.0
+MongoDB,10029,Waiting for Triage,unknown,unknown,0,46,0.0
+MongoDB,10044,Needs Backport,unknown,unknown,0,28,0.0
+MongoDB,10152,Requires Clarification,unknown,unknown,0,28,0.0
+MongoDB,10005,Patch Submitted,unknown,unknown,0,23,0.7826
+MongoDB,11355,Deployed,unknown,unknown,0,21,0.0
+MongoDB,10006,Waiting for Customer,unknown,unknown,0,16,0.0
+MongoDB,13852,Spec In Progress,unknown,unknown,0,10,0.0
+MongoDB,10954,On Deck,unknown,unknown,0,6,0.0
+MongoDB,10350,Needs Mockup,unknown,unknown,0,4,0.0
+MongoDB,11551,Defining Requirements,unknown,unknown,0,3,0.0
+MongoDB,10003,Staging,unknown,unknown,0,1,0.0
+MongoDB,10007,Waiting for bug fix,unknown,unknown,0,1,0.0
+MongoDB,10151,Won't Fix,unknown,unknown,0,1,1.0
+MongoDB,10650,To Do,unknown,unknown,0,1,0.0
+MongoDB,10850,Stuck,unknown,unknown,0,1,0.0
+MongoDB,10955,In Team Review,unknown,unknown,0,1,0.0
+MongoDB,10024,New,unknown,unknown,0,0,
+MongoDB,10028,Waiting for Support,unknown,unknown,0,0,
+MongoDB,10031,Concept,unknown,unknown,0,0,
+MongoDB,10031,To Do,unknown,unknown,0,0,
+MongoDB,11051,Requested,unknown,unknown,0,0,
+Qt,6,Closed,done,current,119798,129101,0.8192
+Qt,10015,Need More Info,done,current,89,20496,1.0
+Qt,5,Resolved,done,current,195,15450,0.9972
+Qt,10008,Withdrawn,done,current,777,826,0.9976
+Qt,3,In Progress,indeterminate,current,632,54761,0.0
+Qt,1,Open,new,current,8533,80750,0.0
+Qt,10011,Reported,new,current,18535,22868,0.0
+Qt,10222,Blocked,new,current,18,158,0.0
+Qt,4,Reopened,new,current,1,135,0.0
+Qt,10007,Verified,unknown,unknown,0,11055,0.2218
+Qt,10006,Implemented,unknown,unknown,0,375,0.0
+Qt,10005,Scheduled,unknown,unknown,0,58,0.0
+Qt,10010,Researching,unknown,unknown,0,15,0.0
+Qt,10013,To Be Evaluated,unknown,unknown,0,14,0.0
+Qt,10004,Schedulable,unknown,unknown,0,11,0.0
+RedHat,6,Closed,done,current,205478,225262,0.4103
+RedHat,5,Resolved,done,current,67242,223430,0.9677
+RedHat,10017,Done,done,current,23983,34996,0.7773
+RedHat,10015,Verified,done,current,13135,21630,0.048
+RedHat,10005,Verified,done,name,0,3903,0.0
+RedHat,13321,Obsolete,done,current,1344,1623,0.9298
+RedHat,11823,Awaiting Release,done,current,690,1333,0.9842
+RedHat,11221,Implemented,done,current,128,1123,0.5272
+RedHat,10424,Rejected,done,current,674,896,0.9743
+RedHat,11824,Released,done,current,76,559,0.0233
+RedHat,14425,Won't Fix / Obsolete,done,current,317,341,0.9091
+RedHat,11523,WON'T FIX,done,current,61,187,0.9198
+RedHat,15735,Release Pending,done,current,2,99,0.0
+RedHat,11322,Completed,done,current,60,63,0.8571
+RedHat,13921,WONTFIX,done,current,25,31,0.5806
+RedHat,14427,Duplicate,done,current,17,27,0.963
+RedHat,15725,Dropped,done,current,18,23,0.8261
+RedHat,14743,Won't Do,done,current,18,20,0.95
+RedHat,15891,Not In Scope,done,current,9,9,0.0
+RedHat,10011,Pull Request Sent,indeterminate,current,1274,93455,0.0053
+RedHat,3,Coding In Progress,indeterminate,current,695,65863,0.0
+RedHat,10018,In Progress,indeterminate,current,1277,28059,0.0
+RedHat,10007,Ready for QA,indeterminate,current,94,26313,0.0043
+RedHat,10000,QA In Progress,indeterminate,current,11,10349,0.0
+RedHat,11321,Ready for Review,indeterminate,current,142,7358,0.0
+RedHat,10019,In Review,indeterminate,current,41,6922,0.1047
+RedHat,14434,Code Review,indeterminate,current,141,3302,0.0
+RedHat,14027,In Development,indeterminate,current,13,2572,0.0
+RedHat,12625,Selected for Development,indeterminate,current,116,1385,0.0
+RedHat,12022,Ready for Dev,indeterminate,current,12,1284,0.0
+RedHat,10221,SME Review,indeterminate,current,13,1194,0.0
+RedHat,15428,In Triage,indeterminate,current,39,1165,0.0
+RedHat,14446,Accepted,indeterminate,current,268,1135,0.1339
+RedHat,14436,QE Review,indeterminate,current,45,1125,0.0
+RedHat,12023,Ready for Build,indeterminate,current,4,1027,0.0
+RedHat,12024,Ready for Release,indeterminate,current,25,949,0.0
+RedHat,11223,Blocked,indeterminate,current,53,925,0.0
+RedHat,11822,Review in Progress,indeterminate,current,7,839,0.0
+RedHat,15429,Quality Review,indeterminate,current,4,734,0.0
+RedHat,10823,Ready for Test,indeterminate,current,2,724,0.0
+RedHat,10002,Approved,indeterminate,current,3,717,0.3319
+RedHat,10822,Dev Complete,indeterminate,current,5,705,1.0
+RedHat,10222,Peer Review,indeterminate,current,1,694,0.0
+RedHat,14442,Under Review,indeterminate,current,96,474,0.0
+RedHat,12422,Review,indeterminate,current,53,467,0.0
+RedHat,10626,Deferred,indeterminate,current,42,412,0.2379
+RedHat,14022,In Clarification,indeterminate,current,6,401,0.0
+RedHat,14448,Feature Complete,indeterminate,current,74,355,0.0
+RedHat,11032,Dev In Progress,indeterminate,current,27,287,0.0
+RedHat,12822,Analysis in Progress,indeterminate,current,10,231,0.0
+RedHat,10003,Pending Upload to Patch Repository,indeterminate,current,1,115,0.0
+RedHat,3,In Progress,indeterminate,current,695,101,0.0
+RedHat,15723,ON_QA,indeterminate,current,5,98,0.0
+RedHat,15425,In Exploration,indeterminate,current,2,78,0.0
+RedHat,13121,QE,indeterminate,current,12,77,0.0
+RedHat,15726,POST,indeterminate,current,3,74,0.0
+RedHat,10000,New,indeterminate,current,11,61,0.0
+RedHat,13031,Build,indeterminate,current,2,54,0.0
+RedHat,14452,ASSIGNED,indeterminate,current,8,52,0.0
+RedHat,13421,Verification,indeterminate,current,6,43,0.0
+RedHat,15427,In Design,indeterminate,current,1,41,0.0
+RedHat,14454,MODIFIED,indeterminate,current,4,33,0.0
+RedHat,13028,Prototype,indeterminate,current,1,31,0.0
+RedHat,14428,Upstream Review,indeterminate,current,1,31,0.0
+RedHat,13027,Ideate,indeterminate,current,3,29,0.0
+RedHat,10622,Selected for Development,indeterminate,name,0,26,0.0
+RedHat,10825,Selected for Development,indeterminate,name,0,26,0.0
+RedHat,11826,Awaiting Docs,indeterminate,current,3,14,0.0
+RedHat,10019,Ready for QE,indeterminate,current,41,10,0.1047
+RedHat,15727,ON_DEV,indeterminate,current,3,7,0.0
+RedHat,10007,Ready to Test,indeterminate,current,94,2,0.0043
+RedHat,10011,Ready to Review,indeterminate,current,1274,2,0.0053
+RedHat,1,Open,new,current,19463,61141,0.0
+RedHat,4,Reopened,new,current,692,31586,0.0
+RedHat,10016,New,new,current,5462,23510,0.0
+RedHat,10020,To Do,new,current,5591,11501,0.0
+RedHat,10004,Ready for QA,new,current,1066,4448,0.0
+RedHat,14028,Productization Backlog,new,current,21,2675,0.0
+RedHat,10824,Backlog,new,current,1392,2378,0.0
+RedHat,14025,Release Backlog,new,current,39,2285,0.0
+RedHat,14030,Validation Backlog,new,current,8,2269,0.0
+RedHat,14323,Development Next,new,current,15,1951,0.0
+RedHat,13026,Plan,new,current,136,1856,0.0
+RedHat,14322,Product Backlog,new,current,227,1528,0.0
+RedHat,10004,Triage,new,current,1066,1316,0.0
+RedHat,10004,Pending Triage,new,current,1066,1270,0.0
+RedHat,14026,Sprint Backlog,new,current,6,896,0.0
+RedHat,15820,Defined,new,current,539,863,0.0
+RedHat,14321,Inbox,new,current,17,629,0.0
+RedHat,15424,On Deck,new,current,29,546,0.0
+RedHat,16527,Developing,new,current,32,516,0.0
+RedHat,16526,To Develop,new,current,64,493,0.0
+RedHat,12021,Ready for Triage,new,current,52,435,0.0
+RedHat,16530,To Test (QE),new,current,25,416,0.0
+RedHat,14032,Validation Failed,new,current,3,365,0.0
+RedHat,16539,To Ship To On-Prem,new,current,4,333,0.0
+RedHat,16528,To Document,new,current,19,308,0.0
+RedHat,16540,Testing (QE),new,current,1,307,0.0
+RedHat,16523,Defining,new,current,23,301,0.0
+RedHat,13521,Unprioritized,new,current,19,230,0.0
+RedHat,16524,To Design,new,current,2,196,0.0
+RedHat,16529,Documenting,new,current,2,192,0.0
+RedHat,16522,To Define,new,current,67,144,0.0
+RedHat,15021,Refinement,new,current,34,135,0.0
+RedHat,11222,Undefined,new,current,4,118,0.0
+RedHat,16525,Designing,new,current,1,116,0.0
+RedHat,15121,Current Sprint,new,current,4,86,0.0
+RedHat,11421,Needs Info,new,current,10,78,0.0
+RedHat,14432,Pending,new,current,1,73,0.0
+RedHat,13521,Planning,new,current,19,32,0.0
+RedHat,11821,Backlog Visible,new,current,2,10,0.0
+RedHat,11821,Sprint Ready,new,current,2,2,0.0
+RedHat,12323,Next,unknown,unknown,0,2775,0.0
+RedHat,14031,In Validation,unknown,unknown,0,2308,0.0
+RedHat,14029,In Productization,unknown,unknown,0,2192,0.0
+RedHat,13621,Tested Upstream,unknown,unknown,0,993,0.0
+RedHat,11721,QE Verification,unknown,unknown,0,876,0.5833
+RedHat,10534,Todo (Review),unknown,unknown,0,864,0.0
+RedHat,15326,TR2FX,unknown,unknown,0,629,0.0
+RedHat,10535,Doing (Review),unknown,unknown,0,582,0.0
+RedHat,15325,TR-2-FxV,unknown,unknown,0,578,0.0
+RedHat,15324,FxV-2-TR,unknown,unknown,0,576,0.0
+RedHat,10532,Todo (Front-end),unknown,unknown,0,533,0.0
+RedHat,14021,Triage Backlog,unknown,unknown,0,326,0.0
+RedHat,10533,Doing (Front-end),unknown,unknown,0,313,0.0
+RedHat,16538,Testing For On-Prem,unknown,unknown,0,274,0.0
+RedHat,16537,To Test For On-Prem,unknown,unknown,0,273,0.0
+RedHat,12521,Ready for QE,unknown,unknown,0,248,0.0
+RedHat,10014,Out for Review,unknown,unknown,0,242,0.0
+RedHat,16531,To Test For SaaS,unknown,unknown,0,237,0.0
+RedHat,16534,To Test For RHOAM,unknown,unknown,0,235,0.0
+RedHat,16535,Testing For RHOAM,unknown,unknown,0,233,0.0
+RedHat,16536,To Ship To RHOAM,unknown,unknown,0,233,0.0
+RedHat,16533,To Deploy On SaaS,unknown,unknown,0,206,0.0
+RedHat,16532,Testing For SaaS,unknown,unknown,0,203,0.0
+RedHat,15327,Fx2Tr,unknown,unknown,0,199,0.0
+RedHat,14023,Planning  Backlog,unknown,unknown,0,197,0.0
+RedHat,11522,SELECTED,unknown,unknown,0,184,0.0
+RedHat,10522,Todo (Triage),unknown,unknown,0,161,0.0
+RedHat,13724,Testing in Progress,unknown,unknown,0,149,0.0
+RedHat,10523,Doing (Triage),unknown,unknown,0,147,0.0
+RedHat,10734,QE - Pending Test Development,unknown,unknown,0,120,0.0
+RedHat,16721,Stakeholder Acceptance,unknown,unknown,0,108,0.0
+RedHat,10023,Design Required,unknown,unknown,0,103,0.0
+RedHat,10526,Todo (Visual Design),unknown,unknown,0,103,0.0
+RedHat,10013,On Hold,unknown,unknown,0,98,0.0
+RedHat,10730,QE - Next Release Priority,unknown,unknown,0,98,0.0
+RedHat,10726,UxD In Progress,unknown,unknown,0,95,0.0
+RedHat,10738,Documented,unknown,unknown,0,89,0.4944
+RedHat,14024,In Planning,unknown,unknown,0,88,0.0
+RedHat,10739,Dev - Selected for Development,unknown,unknown,0,87,0.0
+RedHat,10735,Docs - Pending Documentation,unknown,unknown,0,78,0.0
+RedHat,10727,UxD Provided,unknown,unknown,0,75,0.0
+RedHat,10723,Todo (Content),unknown,unknown,0,73,0.0
+RedHat,10530,Todo (Back-end),unknown,unknown,0,71,0.0
+RedHat,12222,Requirements,unknown,unknown,0,71,0.0
+RedHat,14726,Design In Progress,unknown,unknown,0,67,0.0
+RedHat,10524,Todo (UX),unknown,unknown,0,66,0.0
+RedHat,10527,Doing (Visual Design),unknown,unknown,0,63,0.0
+RedHat,10741,Dev - In Progress,unknown,unknown,0,63,0.0
+RedHat,12226,Implementation,unknown,unknown,0,52,0.0
+RedHat,10733,QE - In Progress,unknown,unknown,0,51,0.0
+RedHat,11922,DOC VERIFICATION,unknown,unknown,0,51,0.7255
+RedHat,10525,Doing (UX),unknown,unknown,0,47,0.0
+RedHat,16421,Validated,unknown,unknown,0,47,0.0
+RedHat,10121,UX required,unknown,unknown,0,43,0.0
+RedHat,15426,Ready for Design,unknown,unknown,0,43,0.0
+RedHat,10531,Doing (Back-end),unknown,unknown,0,41,0.0
+RedHat,12821,Analysis,unknown,unknown,0,39,0.0
+RedHat,10724,DOING (CONTENT),unknown,unknown,0,35,0.0
+RedHat,12221,Planned,unknown,unknown,0,35,0.0
+RedHat,10621,Test Development,unknown,unknown,0,32,0.0
+RedHat,14121,Under Consideration,unknown,unknown,0,31,0.0
+RedHat,15321,[+] ACK/s,unknown,unknown,0,31,0.0
+RedHat,10721,TODO (BUSINESS),unknown,unknown,0,29,0.0
+RedHat,10123,Architecture required,unknown,unknown,0,28,0.0
+RedHat,15322,[+3] ACKs,unknown,unknown,0,28,0.0
+RedHat,13029,QA,unknown,unknown,0,24,0.0
+RedHat,10528,Todo (Software Arch),unknown,unknown,0,23,0.0
+RedHat,10737,Docs - In Progress,unknown,unknown,0,22,0.0
+RedHat,12225,Architecture,unknown,unknown,0,22,0.0
+RedHat,12722,Pull Request Sent - skip QE,unknown,unknown,0,22,1.0
+RedHat,15323,[-] ACK/s,unknown,unknown,0,22,0.0
+RedHat,10625,Next Release Priority,unknown,unknown,0,21,0.0
+RedHat,10529,Doing (Software Arch),unknown,unknown,0,17,0.0
+RedHat,10722,DOING (BUSINESS),unknown,unknown,0,17,0.0
+RedHat,11021,Docs - Review,unknown,unknown,0,17,0.0
+RedHat,14725,Needs Design,unknown,unknown,0,15,0.0
+RedHat,12223,User Experience,unknown,unknown,0,14,0.0
+RedHat,10023,Visual Design Required,unknown,unknown,0,13,0.0
+RedHat,11524,CAN'T REPRODUCE,unknown,unknown,0,13,0.6923
+RedHat,10740,Dev - Next Release Priority,unknown,unknown,0,12,0.0
+RedHat,10008,Signing In Progress,unknown,unknown,0,11,0.0
+RedHat,10012,Waiting For Upstream,unknown,unknown,0,11,0.0
+RedHat,15779,Team Review,unknown,unknown,0,10,0.0
+RedHat,13922,CLOSED:WONTFIX,unknown,unknown,0,9,0.0
+RedHat,14727,In Elaboration,unknown,unknown,0,9,0.0
+RedHat,10725,Documentation,unknown,unknown,0,8,0.0
+RedHat,12224,Visual Design,unknown,unknown,0,7,0.0
+RedHat,16422,Needs Analysis,unknown,unknown,0,7,0.0
+RedHat,14729,Tasking/Estimation,unknown,unknown,0,6,0.0
+RedHat,15431,[-3] ACKs,unknown,unknown,0,6,0.0
+RedHat,15422,M8,unknown,unknown,0,4,0.0
+RedHat,10736,Docs - Priority,unknown,unknown,0,3,0.0
+RedHat,10921,Uncommitted - Best Effort,unknown,unknown,0,3,0.0
+RedHat,11121,Done (Back-end),unknown,unknown,0,3,0.0
+RedHat,12921,Ready,unknown,unknown,0,3,0.0
+RedHat,15421,M7,unknown,unknown,0,3,0.0
+RedHat,17522,Pull Request,unknown,unknown,0,3,0.0
+RedHat,14728,Reviewed,unknown,unknown,0,2,0.0
+RedHat,10009,Pending Product Management Triage,unknown,unknown,0,1,0.0
+RedHat,10421,Will Do,unknown,unknown,0,1,0.0
+RedHat,10422,Working on it,unknown,unknown,0,1,0.0
+RedHat,11042,Verification TODO,unknown,unknown,0,1,1.0
+RedHat,11631,Invalid,unknown,unknown,0,1,1.0
+RedHat,11827,Product Docs,unknown,unknown,0,1,1.0
+RedHat,13030,Measure,unknown,unknown,0,1,0.0
+RedHat,14430,Merged in Github,unknown,unknown,0,1,0.0
+RedHat,15022,Draft,unknown,unknown,0,1,0.0
+RedHat,15324,TR2FxV,unknown,unknown,0,1,0.0
+RedHat,15423,M9,unknown,unknown,0,1,0.0
+RedHat,15732,Scoping,unknown,unknown,0,1,0.0
+RedHat,15744,PASS,unknown,unknown,0,1,1.0
+RedHat,15746,NO ACK,unknown,unknown,0,1,0.0
+RedHat,15328,New / Backlog,unknown,unknown,0,0,
+Sakai,5,RESOLVED,done,current,9386,38307,0.9825
+Sakai,6,CLOSED,done,current,31394,33003,0.2059
+Sakai,10025,Verified,done,current,3957,7957,0.0134
+Sakai,10029,Done,done,current,6,8,1.0
+Sakai,3,In Progress,indeterminate,current,104,7439,0.0
+Sakai,10006,Awaiting Information,indeterminate,current,157,648,0.0
+Sakai,10026,In QA,indeterminate,current,1,254,0.0
+Sakai,10028,Selected for Development,indeterminate,current,3,5,0.0
+Sakai,1,OPEN,new,current,4420,14751,0.0
+Sakai,4,Reopened,new,current,48,5143,0.0
+Sakai,10000,Awaiting Review,new,current,1011,1540,0.0
+Sakai,10027,Backlog,new,current,30,1,0.0
+Sakai,10030,To Do,new,current,33,0,
+SecondLife,6,Closed,done,current,1563,1662,0.4176
+SecondLife,10043,Integration Test,done,resolution,0,522,0.9396
+SecondLife,10043,Integrated,done,resolution,0,322,0.9396
+SecondLife,5,Resolved,done,builtin,0,134,0.6866
+SecondLife,10018,Reviewing,indeterminate,current,23,2150,0.0116
+SecondLife,3,In Progress,indeterminate,current,26,1526,0.0
+SecondLife,10021,Approved,indeterminate,current,2,1083,0.0
+SecondLife,10005,In QA,indeterminate,current,6,276,0.0
+SecondLife,10071,Product Review,indeterminate,current,36,276,0.0
+SecondLife,10048,Pending Release,indeterminate,current,16,183,0.929
+SecondLife,1,Open,new,current,165,1543,0.0
+SecondLife,10030,Needs More Info,new,current,30,89,0.7978
+SecondLife,4,Reopened,new,builtin,0,69,0.0
+SecondLife,10006,Passed QA,unknown,unknown,0,792,0.0631
+SecondLife,10031,Cannot Reproduce,unknown,unknown,0,247,0.6437
+SecondLife,10028,Acknowledged,unknown,unknown,0,224,0.0
+SecondLife,10027,Awaiting Review,unknown,unknown,0,121,0.0
+SecondLife,10033,Expected Behavior,unknown,unknown,0,72,0.6667
+SecondLife,10027,Pending,unknown,unknown,0,68,0.0
+SecondLife,10053,Been Triaged,unknown,unknown,0,43,1.0
+SecondLife,10076,Accepted,unknown,unknown,0,37,1.0
+SecondLife,10023,Requested,unknown,unknown,0,30,0.0
+SecondLife,10001,Fix Pending,unknown,unknown,0,29,0.0
+SecondLife,10017,Ready for Testing,unknown,unknown,0,18,0.0556
+SecondLife,10024,Failed QA,unknown,unknown,0,10,0.5
+SecondLife,10075,Information Provided,unknown,unknown,0,10,0.0
+SecondLife,10029,Released,unknown,unknown,0,7,0.8571
+SecondLife,10027,Waiting Review,unknown,unknown,0,5,0.0
+SecondLife,10037,Build Requested,unknown,unknown,0,4,0.0
+SecondLife,10019,Deferred,unknown,unknown,0,1,0.0
+SecondLife,10020,Passed Testing,unknown,unknown,0,1,0.0
+SecondLife,10022,Rejected,unknown,unknown,0,1,0.0
+SecondLife,10032,Contact Support,unknown,unknown,0,1,1.0
+SecondLife,10032,Support Issue,unknown,unknown,0,1,1.0
+SecondLife,10035,Deploy Requested,unknown,unknown,0,1,0.0
+SecondLife,10070,In Review,unknown,unknown,0,1,0.0
+Sonatype,6,Closed,done,current,84015,85800,0.2005
+Sonatype,5,Resolved,done,current,76,67161,0.9983
+Sonatype,10017,Done,done,current,1881,1900,0.2211
+Sonatype,10013,Waiting for Response,indeterminate,current,30,46640,0.0
+Sonatype,10010,Inactive - Pending Closure,indeterminate,current,30,8222,0.0
+Sonatype,3,In Progress,indeterminate,current,5,3077,0.0
+Sonatype,10007,To Be Tested,indeterminate,current,2,2938,0.0
+Sonatype,10014,Waiting for Review,indeterminate,current,2,2501,0.0004
+Sonatype,10001,Testing In Progress,indeterminate,current,2,2417,0.0
+Sonatype,3,In Development,indeterminate,current,5,1650,0.0
+Sonatype,11034,In Progress,indeterminate,current,4,31,0.0
+Sonatype,3,Dev Day 1,indeterminate,current,5,1,0.0
+Sonatype,1,Open,new,current,362,40031,0.0
+Sonatype,4,Reopened,new,current,1,930,0.0
+Sonatype,10024,New,new,current,764,232,0.0043
+Sonatype,11035,To Do,new,current,39,232,0.0
+Sonatype,10733,Ready for Development,new,current,8,122,0.0
+Sonatype,10016,Raw,new,current,28,62,0.0
+Sonatype,10735,Ready to Groom,new,current,6,58,0.0
+Sonatype,10734,Refine,new,current,9,49,0.0
+Sonatype,11833,Discovery,new,current,3,45,0.0
+Sonatype,10025,Backlog,new,current,17,19,0.0
+Sonatype,1,Ready for Sprint,new,current,362,14,0.0
+Sonatype,1,Ready to Develop,new,current,362,3,0.0
+Sonatype,10015,Defered,unknown,unknown,0,88,0.0
+Sonatype,12933,Waiting for Second Review,unknown,unknown,0,69,0.0
+Sonatype,10008,Blocked,unknown,unknown,0,8,0.0
+Sonatype,10233,Incoming,unknown,unknown,0,0,
+Spring,5,Resolved,done,current,21217,51246,0.9815
+Spring,6,Closed,done,current,37200,38639,0.2529
+Spring,3,In Progress,indeterminate,current,120,20049,0.0
+Spring,10001,Done,indeterminate,current,3145,3736,0.9946
+Spring,10002,Waiting for Feedback,indeterminate,current,258,2587,0.0
+Spring,10005,Waiting for Review,indeterminate,current,42,2348,0.0
+Spring,10003,Investigating,indeterminate,current,176,2190,0.0
+Spring,10004,Done,indeterminate,name,0,1351,0.9519
+Spring,10006,In PR,indeterminate,current,4,676,0.0
+Spring,10003,To Do,indeterminate,current,176,89,0.0
+Spring,10003,New,indeterminate,current,176,32,0.0
+Spring,4,Reopened,new,current,105,3357,0.0173
+Spring,1,Open,new,current,6225,2085,0.0
+Spring,10000,To Do,new,current,664,288,0.0

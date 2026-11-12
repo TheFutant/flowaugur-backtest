@@ -1,0 +1,4 @@
+# Large and fully regenerable — rebuild with ../extract_done_dates.py (see ../README.md).
+done_dates.parquet
+status_transitions.parquet
+_issues_stage.parquet

@@ -1,0 +1,23 @@
+{
+  "source": "MonteJiraSim",
+  "commit": "ae17e093878c68057ee8f5f3e7e54d8fc325305a",
+  "files": {
+    "simulate.py": {
+      "DEFAULT_LEVELS": "d8f65973fc6f2718d7c2cac7aad1fa6940471f73050e0391bc214b9ab9f623b8",
+      "forecast_items_by_date": "6faeade0edc7bbae247fd52fbb2b94bd7258408ec1f74fb222e1276558318617",
+      "confidence_amounts": "8956ff730b6e5b69704ed6c795fc53d4a8a9eab50d356498f6e12d136f409f85"
+    },
+    "metrics.py": {
+      "GRANULARITIES": "0439ce7a12703688791a10431161b94a35aac3b2a15641d19c16826f835911b1",
+      "DEFAULT_SPRINT_DAYS": "d5a3219fd3e8954e3ddf2ff5f3693ffbf31a385d977d850d95e891dc5f929b53",
+      "MIN_CADENCE_SPAN": "957757bf7084b49db2df96446d0dec81ea67ffe82dde0b535071d1cd78a72513",
+      "MIN_CADENCE_ITEMS": "aa3ccd87bee0466ec86357b23113f186164b4a084d8620164cde4a58621a8f66",
+      "_FLOW_ACTIVE_RATIO": "e75cd003b3de95dafac290cb425e6fe890255ff410fa2c2ef6f44e0fb503ec62",
+      "_BURST_GAP_DAYS": "2d8712989dee4dc2e32f63c3d088646ad07d26164c1cef5291a56ed6af44a1a3",
+      "bucket_daily_series": "bef2af25b0c113f60b79f4dbaf9828f9a6ca97bf0f56ccb4230c0f880a0a8194",
+      "CadenceReport": "06d125d00a5da4537ad205639d113bc1419c14e2a77fee81f79dee305abe07ca",
+      "detect_cadence": "d1f87c62101103c750c7685b57877d994745fdb42bab53c2dd728e44989f0230",
+      "remove_outliers_iqr": "67b5adf20b16a54a1cee1bea983b36d8a69053654ffc62fe9a9dff17b223b500"
+    }
+  }
+}
