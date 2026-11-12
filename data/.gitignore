@@ -1,4 +1,6 @@
-# Large and fully regenerable — rebuild with ../extract_done_dates.py (see ../README.md).
+# Large and fully regenerable: rebuild with ../extract_done_dates.py (see ../README.md).
 done_dates.parquet
 status_transitions.parquet
 _issues_stage.parquet
+# Single-project replays from replay.py; results.parquet is the one results table.
+replay_*.parquet

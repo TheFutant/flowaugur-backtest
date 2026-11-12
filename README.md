@@ -12,6 +12,49 @@ scores each one against what actually happened.
 - **No hindsight:** each forecast is rebuilt from the data before its cutoff
   date only, then compared with the following 2 to 12 weeks.
 
+## Results so far
+
+39,168 replayed forecasts: 24 projects, 34 cutoff dates each, two weeks apart.
+At the app's default settings (day buckets, 26 weeks of history):
+
+| | P50 | P70 | P85 | P95 |
+|---|---:|---:|---:|---:|
+| As shipped (IQR outlier drop on) | 56% | 65% | 73% | 82% |
+| Raw (no outlier drop) | 43% | 55% | 66% | 77% |
+
+Each figure is the share of forecasts in which the project finished at least
+the forecast amount. A calibrated P85 would hold 85% of the time; the pass mark
+set beforehand was 80–90%. **FlowAugur's 85% forecasts held 73% of the time**,
+so on this data the forecast is overconfident.
+
+![Calibration plot](figures/calibration.png)
+
+- **The forecast range is too narrow.** 56% of actual results fell in the
+  outer tenths of their forecast distribution, where a calibrated forecast
+  would put 20% ([PIT histogram](figures/pit_histogram.png)).
+- **The outlier drop makes the forecast more cautious, not more accurate.** It
+  removes the busiest days from history, which lowers the forecast by a median
+  8%. A lower forecast is easier to beat, so more of them hold (73% against
+  66%), but the continuous score barely moves (mean CRPS 64 against 65) and the
+  range is too narrow either way.
+- **Wider buckets held more often**, by a few points: P85 held 73% with day
+  buckets, 76% with week and 79% with 2-week
+  ([bucket comparison](figures/bucket_comparison.png)).
+- **Longer horizons held less often**: as shipped, P85 held 78% at 2 weeks and
+  70% at 12 weeks.
+- **Projects differ a lot**: P85 coverage runs from 44% (Apache AMBARI) to 94%
+  (Spring SPR); 5 of the 24 projects sit inside the 80–90% pass mark.
+
+Limits to keep in mind:
+
+- All 24 projects are steady by FlowAugur's own cadence detection, so these
+  results say nothing about teams that close work in batches.
+- They are open-source projects, mostly closing bugs, and "done" includes
+  tickets closed as Duplicate or Invalid.
+- A project's 34 cutoffs overlap, so its forecasts are not independent.
+- Seven of the 24 two-year windows fall in 2020–2021.
+- The forecast is of items completed. It does not model scope added later.
+
 ## The engine
 
 FlowAugur's app lives in a private repository, MonteJiraSim. `engine/` holds a
@@ -61,19 +104,31 @@ Everything after the extract runs from `data/daily_throughput.parquet`, which
 is committed, so the download is only needed to rebuild from scratch.
 [uv](https://docs.astral.sh/uv/) installs the dependencies from `uv.lock`.
 
-## Replay one project
+## Run the backtest
 
 `replay.py` rebuilds FlowAugur's forecast at each cutoff from the data before
 it, using the engine snapshot unchanged, and scores it against what happened.
+`backtest.py` runs it for the 24 projects, after checking that each project's
+window and cutoffs still match `data/frozen_windows.csv`, the table fixed
+before any results existed.
 
 ```bash
-uv run replay.py --instance Apache --project SPARK      # -> data/replay_apache_spark.parquet
+uv run backtest.py                                      # -> data/results.parquet (about 90 seconds)
+uv run charts.py                                        # -> figures/calibration, bucket_comparison, pit_histogram
 uv run fan_chart.py --instance Apache --project SPARK   # -> figures/fan_apache_spark.png
-uv run pytest                                           # replay wiring and engine snapshot
+uv run replay.py --instance Apache --project SPARK      # one project on its own
+uv run pytest                                           # replay wiring, the gate, engine snapshot
 ```
 
-One row per cutoff × bucket (day, week, 2 weeks) × history (84, 182 days) ×
-horizon (14, 28, 56, 84 days) × outlier drop (on, off):
+The projects are the five largest per Jira instance among those with a
+two-year window in which at least 10 items were done in at least 90% of weeks.
+Cutoffs run every two weeks inside that window. A forecast made at a cutoff
+uses the 12 or 26 weeks before it and is scored on the 2, 4, 8 or 12 weeks
+after it.
+
+`results.parquet` has one row per project × cutoff × bucket (day, week,
+2 weeks) × history (84, 182 days) × horizon (14, 28, 56, 84 days) × outlier
+drop (on, off):
 
 | Column | Meaning |
 |---|---|
@@ -86,7 +141,8 @@ horizon (14, 28, 56, 84 days) × outlier drop (on, off):
 | `n_samples`, `days_dropped` | Buckets fed to the engine; days removed by the IQR outlier drop |
 
 The conventions (which days are history, which window the cutoffs come from)
-are in the docstring of `replay.py` and in [Handoff.md](Handoff.md).
+are in the docstring of `replay.py`. The chart definitions are in the docstring
+of `charts.py`.
 
 ## What's in `data/`
 
@@ -98,11 +154,19 @@ are in the docstring of `replay.py` and in [Handoff.md](Handoff.md).
 | `project_overview.csv` | 1,227 | 75 KB | Per-project span and steadiness metrics (project-filter inputs) |
 | `status_categories.csv` | 756 | 40 KB | The status → category map used, and how each was inferred |
 | `instance_summary.csv` | 16 | 1 KB | Counts and date span per Jira instance |
-| `replay_apache_spark.parquet` | 1,632 | 58 KB | Scored forecast replays for Apache SPARK |
+| `frozen_windows.csv` | 24 | 2 KB | The 24 projects with their window and first and last cutoff, fixed before the run |
+| `results.parquet` | 39,168 | 1.1 MB | Every scored forecast: the results table |
+| `project_summary.csv` | 24 | 3 KB | Per project: window, detected cadence, and how often each band held |
 
-`figures/weekly_throughput.png` is the weekly-throughput sparkline sheet for
-the 119 projects that pass the loosest reading of the project filter.
-`figures/fan_apache_spark.png` is the fan chart for one Apache SPARK forecast.
+In `figures/`:
+
+| File | What |
+|---|---|
+| `calibration.png` | Stated confidence against how often it held, across projects |
+| `bucket_comparison.png` | P85 coverage for day, week and 2-week buckets |
+| `pit_histogram.png` | Where actual results fell inside their forecast distributions |
+| `fan_apache_spark.png` | One Apache SPARK forecast against what happened |
+| `weekly_throughput.png` | Weekly throughput for 119 candidate projects, used to choose the filter |
 
 ### `done_dates.parquet`
 
