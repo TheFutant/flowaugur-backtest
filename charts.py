@@ -15,6 +15,13 @@ Every definition here was fixed before the full results existed:
 * **PIT** is the share of simulated totals at or below the actual. Ten equal
   bins; a calibrated forecast puts 10% of forecasts in each.
 
+**Experiment 3b** (block resampling, not FlowAugur's engine) gets its own two
+figures, ``calibration_3b.png`` and ``pit_histogram_3b.png``, drawn from
+``data/experiment_3b.parquet`` with the same definitions. They show four
+methods at the same settings: the two Session 3 series above, and 14-day and
+28-day block resampling on raw history. The Session 3 figures are left as they
+were.
+
 Usage::
 
     uv run charts.py
@@ -43,6 +50,14 @@ SURFACE, INK, MUTED, RULE = "#fcfcfb", "#0b0b0b", "#52514e", "#b9b8b2"
 SERIES = {True: ("As shipped (IQR outlier drop on)", "#2a78d6", "o"), False: ("Raw (no outlier drop)", "#eb6834", "s")}
 LEVELS = [50, 70, 85, 95]
 BUCKET_NAME = {"day": "day", "week": "week", "2 weeks": "2-week"}
+# Experiment 3b: method -> (label, colour, marker). Colour follows the method, so the two
+# Session 3 series keep theirs. Validated in this order; marker shape repeats the identity.
+METHOD_STYLE = {
+    "shipped": ("Day buckets, as shipped", "#2a78d6", "o"),
+    "raw": ("Day buckets, raw", "#eb6834", "s"),
+    "block14": ("14-day blocks, raw (experiment)", "#1baf7a", "D"),
+    "block28": ("28-day blocks, raw (experiment)", "#eda100", "^"),
+}
 PASS_MARK = (0.80, 0.90)  # the plan's pass mark for P85
 SOURCE = "Source: The Public Jira Dataset (Montgomery, Lüders & Maalej), CC BY 4.0."
 
@@ -57,14 +72,20 @@ def style(ax: plt.Axes) -> None:
     ax.tick_params(colors=MUTED, labelsize=9.5, length=0)
 
 
-def spread(ax: plt.Axes, x: float, rates: np.ndarray, drop: bool, label_side: int) -> float:
-    """One series at one x: project dots, interquartile bar, mean point and its label."""
-    _, color, marker = SERIES[drop]
+def marks(ax: plt.Axes, x: float, rates: np.ndarray, color: str, marker: str) -> float:
+    """One series at one x: project dots, interquartile bar and mean point."""
     mean = float(np.mean(rates))
     low, high = np.percentile(rates, [25, 75])
     ax.scatter(np.full(len(rates), x), rates, s=13, color=color, alpha=0.28, linewidths=0, marker=marker, zorder=2)
     ax.plot([x, x], [low, high], color=color, linewidth=2.2, solid_capstyle="round", zorder=3)
     ax.scatter([x], [mean], s=78, color=color, marker=marker, edgecolors=SURFACE, linewidths=1.6, zorder=4)
+    return mean
+
+
+def spread(ax: plt.Axes, x: float, rates: np.ndarray, drop: bool, label_side: int) -> float:
+    """``marks`` for a Session 3 series, with the mean labelled beside its point."""
+    _, color, marker = SERIES[drop]
+    mean = marks(ax, x, rates, color, marker)
     ax.annotate(
         f"{mean:.0%}", xy=(x, mean), xytext=(9 * label_side, 0), textcoords="offset points",
         ha="left" if label_side > 0 else "right", va="center", fontsize=10.5, color=INK, fontweight="bold",
@@ -229,6 +250,96 @@ def pit_histogram(results: pd.DataFrame) -> dict:
     return shares
 
 
+def calibration_3b(table: pd.DataFrame) -> dict:
+    """The calibration plot with the block-resampling experiment beside Session 3's series."""
+    rates = table.groupby(["instance", "project", "method"])[backtest.HIT_COLUMNS].mean()
+    fig, ax = plt.subplots(figsize=(12, 6.3), facecolor=SURFACE)
+    ax.axhspan(*PASS_MARK, color=RULE, alpha=0.22, linewidth=0, zorder=0)  # spans the chart
+    ax.plot([40, 100], [0.40, 1.00], color=RULE, linewidth=1.1, linestyle=(0, (4, 3)), zorder=1)
+    ax.annotate("perfectly calibrated", xy=(60, 0.60), xytext=(0, 7), textcoords="offset points", ha="center", fontsize=9, color=MUTED)
+    means: dict = {}
+    for (method, (_, color, marker)), offset in zip(METHOD_STYLE.items(), (-3.3, -1.1, 1.1, 3.3)):
+        for level in LEVELS:
+            values = rates.xs(method, level="method")[f"hit_p{level}"].to_numpy()
+            means[(method, level)] = marks(ax, level + offset, values, color, marker)
+            if level == 85:  # the pass test is on P85: label only those, in a row above the group
+                ax.annotate(
+                    f"{means[(method, level)]:.0%}", xy=(level + offset, 0.985), ha="center", va="bottom",
+                    fontsize=10.5, color=INK, fontweight="bold",
+                )  # fmt: skip
+    ax.set_xlim(42, 101)
+    percent_axis(ax, float(rates.min().min()))
+    ax.set_xticks(LEVELS)
+    ax.set_xticklabels([f"P{level}" for level in LEVELS])
+    ax.set_xlabel("Stated Confidence", fontsize=9.5, color=MUTED)
+    ax.set_ylabel("Forecasts That Held", fontsize=9.5, color=MUTED)
+    style(ax)
+    raw, b14, b28 = (means[(m, 85)] for m in ("raw", "block14", "block28"))
+    best = max(b14, b28)
+    direction = "up from" if best > raw + 0.005 else "down from" if best < raw - 0.005 else "against"
+    titles(
+        fig,
+        f"Block resampling: P85 held {b14:.0%} (14-day blocks) and {b28:.0%} (28-day), {direction} {raw:.0%} with single days",
+        f"Share of replayed forecasts in which the project finished at least the forecast amount. {len(table) // len(METHOD_STYLE):,} forecasts per method:\n"
+        "26 weeks of history, horizons of 2, 4, 8 and 12 weeks. Block resampling is an experiment in this repository, not what FlowAugur ships.",
+        "Figures above the P85 group are its four means. Point = mean of the project rates; bar = middle half of projects.\n"
+        "Each project has 34 cutoff dates two weeks apart, so its forecasts overlap and are not independent.",
+    )
+    handles = [
+        Line2D([], [], color=color, marker=marker, markersize=8, markeredgecolor=SURFACE, linewidth=2.2, label=label)
+        for label, color, marker in METHOD_STYLE.values()
+    ]
+    handles.append(Line2D([], [], color=MUTED, marker="o", markersize=4, alpha=0.4, linewidth=0, label="one project"))
+    handles.append(Patch(facecolor=RULE, alpha=0.55, label="pass mark for P85: 80–90%"))
+    out = fig.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.036, 0.848), ncols=3, frameon=False, fontsize=9.5, columnspacing=2.0)
+    for text in out.get_texts():
+        text.set_color(MUTED)
+    fig.subplots_adjust(left=0.075, right=0.965, top=0.725, bottom=0.185)
+    save(fig, "calibration_3b.png")
+    return means
+
+
+def pit_histogram_3b(table: pd.DataFrame) -> dict:
+    """The PIT histogram for all four methods, one panel each."""
+    edges = np.linspace(0, 1, 11)
+    fig, axes = plt.subplots(1, 4, figsize=(12, 6.3), sharey=True, facecolor=SURFACE)
+    shares: dict = {}
+    for ax, (method, (label, color, _)) in zip(axes, METHOD_STYLE.items()):
+        counts, _ = np.histogram(table.loc[table["method"] == method, "pit"].to_numpy(), bins=edges)
+        share = counts / counts.sum()
+        shares[method] = share
+        ax.bar(edges[:-1] + 0.05, share, width=0.082, color=color, linewidth=0)
+        ax.axhline(0.10, color=INK, linewidth=1.0, linestyle=(0, (4, 3)), zorder=3)
+        for i in (0, 9):
+            ax.annotate(f"{share[i]:.0%}", xy=(edges[i] + 0.05, share[i]), xytext=(0, 4), textcoords="offset points", ha="center", fontsize=10.5, color=INK, fontweight="bold")
+        name, _, note = label.partition(" (")
+        ax.set_title(name + ("\n(" + note if note else "\n"), fontsize=10.5, color=INK, loc="left", fontweight="bold", pad=8, linespacing=1.25)
+        ax.set_xlim(0, 1)
+        ax.set_xticks([0, 0.5, 1])
+        labels = ax.set_xticklabels(["0%", "50%", "100%"])
+        labels[0].set_horizontalalignment("left")
+        labels[-1].set_horizontalalignment("right")
+        style(ax)
+    top = max(float(s.max()) for s in shares.values())
+    axes[0].set_ylim(0, top * 1.14)
+    axes[0].set_yticks(np.arange(0, top * 1.14, 0.1))
+    axes[0].set_yticklabels([f"{v:.0%}" for v in np.arange(0, top * 1.14, 0.1)])
+    axes[0].set_ylabel("Share of Forecasts", fontsize=9.5, color=MUTED)
+    axes[1].annotate("calibrated: 10% in every bar", xy=(0.5, 0.10), xytext=(0, 4), textcoords="offset points", ha="center", fontsize=8.5, color=MUTED)
+    fig.text(0.52, 0.118, "Share of Simulated Outcomes at or Below the Actual", ha="center", fontsize=9.5, color=MUTED)
+    outer = {method: float(share[0] + share[9]) for method, share in shares.items()}
+    titles(
+        fig,
+        f"Results in the outer tenths: {outer['raw']:.0%} with single days, {outer['block14']:.0%} with 14-day blocks, {outer['block28']:.0%} with 28-day",
+        "Where each actual result fell within its own forecast distribution; a calibrated forecast puts 10% in every bar, so 20% in the two end bars.\n"
+        "Same forecasts as the calibration plot. Block resampling is an experiment in this repository, not what FlowAugur ships.",
+        "Left bars: the project did less than nearly every simulated outcome; right bars: more. A range that is too narrow piles results into the end bars.",
+    )
+    fig.subplots_adjust(left=0.075, right=0.965, top=0.735, bottom=0.2, wspace=0.09)
+    save(fig, "pit_histogram_3b.png")
+    return shares
+
+
 def main() -> int:
     results = pd.read_parquet(HERE / "data" / "results.parquet")
     means = calibration(results)
@@ -242,6 +353,13 @@ def main() -> int:
     shares = pit_histogram(results)
     for drop in (True, False):
         print(f"PIT {SERIES[drop][0]}: lowest tenth {shares[drop][0]:.1%}, highest tenth {shares[drop][9]:.1%}")
+
+    experiment = HERE / "data" / "experiment_3b.parquet"
+    if experiment.exists():
+        table = pd.read_parquet(experiment)
+        calibration_3b(table)
+        pit_histogram_3b(table)
+        print("experiment 3b: calibration_3b.png and pit_histogram_3b.png drawn")
     return 0
 
 

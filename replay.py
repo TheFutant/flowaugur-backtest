@@ -136,6 +136,31 @@ def crps(samples: np.ndarray, observed: float) -> float:
     return float(np.mean(np.abs(x - observed)) - 0.5 * spread)
 
 
+def score(totals: np.ndarray, done: int) -> dict:
+    """Score one forecast. Every method in this repository is scored here: the
+    engine's "at least" amount per confidence level, whether each held, where
+    the actual fell among the simulated totals (PIT), and CRPS."""
+    amounts = confidence_amounts(totals, lower_is_safer=True)
+    out = {
+        "actual": done,
+        "mean": float(totals.mean()),
+        "pit": float((totals <= done).mean()),
+        "crps": crps(totals, done),
+    }
+    for level in DEFAULT_LEVELS:
+        name = f"p{round(level * 100)}"
+        out[name] = amounts[level]
+        out[f"hit_{name}"] = bool(done >= amounts[level])
+    return out
+
+
+SCORE_COLUMNS = ["pit", "crps", "p50", "hit_p50", "p70", "hit_p70", "p85", "hit_p85", "p95", "hit_p95"]
+COLUMNS = [
+    "instance", "project", "cutoff", "bucket", "history_days", "horizon_days", "outlier_drop",
+    "n_samples", "days_dropped", "actual", "mean", "naive", *SCORE_COLUMNS,
+]  # fmt: skip
+
+
 def replay(daily: pd.Series, instance: str = "", project: str = "") -> pd.DataFrame:
     """One scored forecast per cutoff x bucket x history x horizon x outlier setting."""
     rows = []
@@ -154,30 +179,22 @@ def replay(daily: pd.Series, instance: str = "", project: str = "") -> pd.DataFr
                             rng=rng_for(cutoff, bucket_days, history_days, horizon_days, drop),
                             bucket_days=bucket_days,
                         )
-                        amounts = confidence_amounts(totals, lower_is_safer=True)
-                        done = actual(daily, cutoff, horizon_days)
-                        row = {
-                            "instance": instance,
-                            "project": project,
-                            "cutoff": cutoff.date(),
-                            "bucket": bucket,
-                            "history_days": history_days,
-                            "horizon_days": horizon_days,
-                            "outlier_drop": drop,
-                            "n_samples": len(samples),
-                            "days_dropped": days_dropped,
-                            "actual": done,
-                            "mean": float(totals.mean()),
-                            "naive": naive_rate * horizon_days,
-                            "pit": float((totals <= done).mean()),
-                            "crps": crps(totals, done),
-                        }
-                        for level in DEFAULT_LEVELS:
-                            name = f"p{round(level * 100)}"
-                            row[name] = amounts[level]
-                            row[f"hit_{name}"] = bool(done >= amounts[level])
-                        rows.append(row)
-    return pd.DataFrame(rows)
+                        rows.append(
+                            {
+                                "instance": instance,
+                                "project": project,
+                                "cutoff": cutoff.date(),
+                                "bucket": bucket,
+                                "history_days": history_days,
+                                "horizon_days": horizon_days,
+                                "outlier_drop": drop,
+                                "n_samples": len(samples),
+                                "days_dropped": days_dropped,
+                                "naive": naive_rate * horizon_days,
+                                **score(totals, actual(daily, cutoff, horizon_days)),
+                            }
+                        )
+    return pd.DataFrame(rows)[COLUMNS]
 
 
 def coverage(results: pd.DataFrame, by: list[str]) -> pd.DataFrame:

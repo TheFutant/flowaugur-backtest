@@ -55,6 +55,41 @@ Limits to keep in mind:
 - Seven of the 24 two-year windows fall in 2020–2021.
 - The forecast is of items completed. It does not model scope added later.
 
+## Experiment 3b: does block resampling fix the narrow range?
+
+**No.** This is experiment code written for this backtest (`experiment_3b.py`),
+not FlowAugur's engine and not in the app.
+
+FlowAugur resamples single days independently. The experiment resamples runs of
+14 or 28 consecutive real days instead (a moving-block bootstrap), on raw
+history with 26 weeks of history and the same forecasts as above. The pass
+test was fixed before any results: P85 holds 80–90%, at most 30% of results in
+the outer tenths, and mean CRPS at most 64.
+
+| | P85 held | Results in outer tenths | Mean CRPS | Passes |
+|---|---:|---:|---:|---|
+| Day buckets, as shipped (Session 3) | 73% | 56% | 63.9 | no |
+| Day buckets, raw (Session 3) | 66% | 50% | 65.0 | no |
+| 14-day blocks, raw (experiment) | 71% | 43% | 63.9 | no |
+| 28-day blocks, raw (experiment) | 72% | 42% | 64.6 | no |
+
+Block resampling moves every measure the right way and closes a third to a
+half of the gap to the pass marks for coverage and for the tails. Neither block
+length passes.
+
+![Calibration plot with block resampling](figures/calibration_3b.png)
+
+Why resampling the past cannot close the gap: **the pace itself changes.**
+Dividing each horizon's daily rate by the daily rate of the 26 weeks before it
+gives a median of 0.93 and a middle half of 0.74 to 1.15. In half of all
+forecasts (51%) the pace fell below 0.8 or rose above 1.25 times the recent
+rate, and that is still true of 47% at the 12-week horizon. Of the forecasts
+whose result landed in an outer tenth, 84% had such a pace shift (raw day
+buckets), against 17% of the rest. That last figure is partly true by
+construction, since a result far from the forecast is a pace far from the
+history; the first one is the finding. A forecast built only from how fast the
+team went recently is confident about a pace that often does not hold.
+
 ## The engine
 
 FlowAugur's app lives in a private repository, MonteJiraSim. `engine/` holds a
@@ -114,7 +149,8 @@ before any results existed.
 
 ```bash
 uv run backtest.py                                      # -> data/results.parquet (about 90 seconds)
-uv run charts.py                                        # -> figures/calibration, bucket_comparison, pit_histogram
+uv run experiment_3b.py                                 # -> data/experiment_3b.parquet (block resampling, 10 seconds)
+uv run charts.py                                        # -> figures/calibration, bucket_comparison, pit_histogram (+ the _3b pair)
 uv run fan_chart.py --instance Apache --project SPARK   # -> figures/fan_apache_spark.png
 uv run replay.py --instance Apache --project SPARK      # one project on its own
 uv run pytest                                           # replay wiring, the gate, engine snapshot
@@ -157,6 +193,9 @@ of `charts.py`.
 | `frozen_windows.csv` | 24 | 2 KB | The 24 projects with their window and first and last cutoff, fixed before the run |
 | `results.parquet` | 39,168 | 1.1 MB | Every scored forecast: the results table |
 | `project_summary.csv` | 24 | 3 KB | Per project: window, detected cadence, and how often each band held |
+| `experiment_3b.parquet` | 13,056 | 0.4 MB | Experiment 3b: the two block-resampling variants and the two Session 3 baselines, scored, with each forecast's pace ratio |
+| `experiment_3b_summary.csv` | 4 | 1 KB | Experiment 3b: each method against the pass test |
+| `experiment_3b_pace.csv` | 5 | 1 KB | Experiment 3b: the pace ratio's distribution, overall and by horizon |
 
 In `figures/`:
 
@@ -165,6 +204,7 @@ In `figures/`:
 | `calibration.png` | Stated confidence against how often it held, across projects |
 | `bucket_comparison.png` | P85 coverage for day, week and 2-week buckets |
 | `pit_histogram.png` | Where actual results fell inside their forecast distributions |
+| `calibration_3b.png`, `pit_histogram_3b.png` | The same two charts with the block-resampling experiment added |
 | `fan_apache_spark.png` | One Apache SPARK forecast against what happened |
 | `weekly_throughput.png` | Weekly throughput for 119 candidate projects, used to choose the filter |
 

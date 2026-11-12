@@ -80,6 +80,12 @@ def app_default(results: pd.DataFrame) -> pd.DataFrame:
     return results[(results["bucket"] == APP_BUCKET) & (results["history_days"] == APP_HISTORY_DAYS)]
 
 
+def outer_tenths(pit: pd.Series) -> tuple[float, float]:
+    """Share of forecasts whose actual fell in the bottom and the top tenth of
+    the forecast distribution: the two end bars of the PIT histogram."""
+    return float((pit < 0.1).mean()), float((pit >= 0.9).mean())
+
+
 def hit_rates(results: pd.DataFrame, by: list[str]) -> pd.DataFrame:
     """Share of forecasts whose band held, per project and ``by``, one column per level."""
     rates = results.groupby(["instance", "project", *by])[HIT_COLUMNS].mean()

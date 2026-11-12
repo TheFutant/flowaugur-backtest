@@ -1,12 +1,14 @@
 # Handoff — FlowAugur backtest
 
-Last updated 2026-11-12, end of Session 3 ("full backtest").
+Last updated 2026-11-12, end of Session 3b ("block resampling").
 
 **Where it stands:** the backtest has its own repository and has been run in
 full: 24 projects, 39,168 scored forecasts, one results table, and the
 calibration plot, bucket-size comparison and PIT histogram. The headline is
 that FlowAugur's 85% forecasts held 73% of the time, below the 80–90% pass
-mark. Session 4 is the write-up and making this repository public.
+mark. Experiment 3b then tested whether block resampling fixes the too-narrow
+range: it helps, and neither block length passes the test declared for it.
+Session 4 is the write-up and making this repository public.
 
 - Plan: <https://claude.ai/artifact/B1G2BVECSviHTERyNtj1d3> (a Claude Doc — read
   it with the Claude Docs tools; a web fetch will not work). Its "Decisions
@@ -64,8 +66,9 @@ Raw: 73%, 68%, 64%, 59%. Coverage falls as the horizon grows.
 - **The forecast range is too narrow.** At the app's defaults, as shipped, 56%
   of actual results fell in the outer tenths of their own forecast
   distribution (23% in the bottom tenth, 33% in the top); a calibrated forecast
-  gives 20%. Raw: 51% (29% bottom, 22% top). This is the main finding, and it
-  is why P95 holds only about 80% of the time.
+  gives 20%. Raw: 50% (29% bottom, 22% top; 50.4% before rounding. This file
+  and the plan said 51% until Session 3b, from adding the rounded halves). This
+  is the main finding, and it is why P95 holds only about 80% of the time.
 - **The outlier drop is more cautious, not more accurate.** It removes the
   busiest days from history, which lowers the forecast: the mean simulated
   total is a median 8% below the raw one, and lower in 93% of pairs. The "did
@@ -87,9 +90,94 @@ Raw: 73%, 68%, 64%, 59%. Coverage falls as the horizon grows.
   mean of 84 items; the Monte Carlo forecast's CRPS is about 64. CRPS of a
   point forecast is its absolute error, so the two are comparable.
 
-Not established: *why* the range is too narrow. The likely cause is that the
+Why the range is too narrow was a hypothesis at the end of Session 3 (the
 engine resamples days independently, while real throughput has good and bad
-stretches that last weeks. That is a hypothesis; nothing here tests it.
+stretches). Experiment 3b tested it; see the next section.
+
+## Experiment 3b: block resampling
+
+**Neither block length passes.** The spec is the plan's "Experiment 3b"
+section, declared before any 3b results; variants, settings and pass test were
+run as written. The sampler is experiment code in `experiment_3b.py`. It is
+not FlowAugur's engine, not in `engine/`, and not in the app.
+
+What was run: a moving-block bootstrap on the raw daily history (no outlier
+drop), 14-day and 28-day blocks, start points uniform over every full block in
+the 26-week history, blocks joined end to end and the last one cut to the
+horizon; horizons of 2, 4, 8 and 12 weeks; 10,000 trials; the frozen windows
+and 34 cutoffs per project. 3,264 forecasts per method, scored by the same
+`replay.score` function as Session 3.
+
+Pass test: P85 holds 80–90%; at most 30% of actuals in the outer tenths; mean
+CRPS at most 64. All three are needed.
+
+| Method | P50 | P70 | P85 | P95 | Outer tenths | Mean CRPS | P85 | Tails | CRPS | Passes |
+|---|---:|---:|---:|---:|---:|---:|---|---|---|---|
+| Day buckets, as shipped (Session 3) | 56% | 65% | 73.4% | 82% | 56.0% | 63.9 | fail | fail | pass | no |
+| Day buckets, raw (Session 3) | 43% | 55% | 66.0% | 77% | 50.4% | 65.0 | fail | fail | fail | no |
+| 14-day blocks, raw (experiment) | 44% | 58% | 70.9% | 82% | 43.4% | 63.9 | fail | fail | pass | no |
+| 28-day blocks, raw (experiment) | 45% | 58% | 72.4% | 82% | 42.2% | 64.6 | fail | fail | fail | no |
+
+Comparisons use unrounded values; none of the verdicts hinges on rounding
+(14-day CRPS is 63.87, 28-day is 64.65).
+
+What it shows:
+
+- **Block resampling helps, by a third to a half of what is needed.** Against
+  raw day buckets, P85 rises 5 to 6 points toward a pass mark 14 points away,
+  and the outer-tenth share falls 7 to 8 points toward a limit 20 points away.
+- **It widens the range only a little.** The gap between the P50 and P95
+  amounts is a median 27% of the forecast with blocks, against 24% with single
+  days.
+- **It does not change the level.** Blocks and single days both run a median
+  8% above the actual (forecast-to-actual ratio 1.08). The outlier drop is what
+  moves the level (0.97); blocks were declared on raw history.
+- **By horizon** the pattern is the same as before: 14-day blocks hold P85 79%
+  of the time at 2 weeks and 64% at 12 weeks.
+- **Across projects:** 2 of 24 are inside the P85 pass mark with 14-day blocks
+  and 3 with 28-day, against 3 for raw day buckets and 5 as shipped.
+
+### Pace-shift diagnostic (descriptive)
+
+The ratio is each forecast's horizon daily rate divided by the daily rate of
+its 26-week history; one value per project, cutoff and horizon (3,264).
+
+| Horizon | 5% | 15% | 25% | Median | 75% | 85% | 95% | Below 0.8 | Above 1.25 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| All | 0.46 | 0.63 | 0.74 | 0.93 | 1.15 | 1.31 | 1.70 | 32% | 18% |
+| 2 weeks | 0.42 | 0.59 | 0.69 | 0.91 | 1.16 | 1.32 | 1.67 | 37% | 20% |
+| 4 weeks | 0.45 | 0.63 | 0.74 | 0.93 | 1.14 | 1.30 | 1.69 | 34% | 18% |
+| 8 weeks | 0.48 | 0.65 | 0.77 | 0.93 | 1.15 | 1.29 | 1.72 | 29% | 17% |
+| 12 weeks | 0.48 | 0.67 | 0.78 | 0.93 | 1.14 | 1.32 | 1.70 | 29% | 18% |
+
+Half of all forecasts (50.6%) saw the pace fall below 0.8 or rise above 1.25
+times the recent rate; 47% still did at 12 weeks.
+
+Share of outer-tenth misses with a ratio below 0.8 or above 1.25:
+
+| Method | Outer-tenth misses | Of them, with a pace shift | Of the other forecasts |
+|---|---:|---:|---:|
+| Day buckets, as shipped | 1,828 | 72% | 23% |
+| Day buckets, raw | 1,646 | 84% | 17% |
+| 14-day blocks, raw | 1,418 | 86% | 24% |
+| 28-day blocks, raw | 1,379 | 84% | 26% |
+
+How to read it:
+
+- **The misses are pace changes.** About 84% of outer-tenth misses come with a
+  pace shift, whichever raw method is used.
+- **That share is partly true by construction.** An outer-tenth miss means the
+  actual was far from the forecast's centre, and the centre is the history
+  rate times the horizon, so a miss nearly implies a ratio far from 1. The
+  figure that stands on its own is the distribution: the pace of the next
+  2 to 12 weeks differs from the last 26 by more than 20–25% half the time.
+- **What that implies for any resampling fix.** In 15% of forecasts the
+  project ran at under 63% of its recent pace. A P85 forecast that held 85% of
+  the time would have to sit that low, which no reshuffling of the last 26
+  weeks produces. This is an inference from the table, not something the
+  experiment tested.
+- The median ratio is 0.93: these projects ran about 7% slower in the horizon
+  than in the history, which is the same upward bias as the raw forecast's.
 
 ## Decisions
 
@@ -144,8 +232,13 @@ a MonteJiraSim checkout, against that commit byte for byte. It also vendors
   full results table are identical to that again.
 - The results table has 39,168 rows, 1,632 per project, no nulls, and the four
   amounts are ordered in every row.
-- 27 tests pass: replay wiring, the frozen-window gate, the summaries, the
-  engine snapshot. Ruff is clean.
+- 40 tests pass: replay wiring, the frozen-window gate, the summaries, the
+  engine snapshot, and the block sampler and its reporting. Ruff is clean.
+- Session 3b: the frozen-window gate passed again before the run. Scoring was
+  moved into one function (`replay.score`) so the experiment is scored by the
+  same code; re-running the Session 3 backtest afterwards reproduced
+  `results.parquet` exactly. The baseline rows in `experiment_3b.parquet` are
+  Session 3's rows. Re-drawing the Session 3 figures left them byte-identical.
 - MonteJiraSim after the move: pyright clean, 803 tests at 100% coverage, ruff
   and bandit clean; `pyproject.toml` is back to its state before the backtest.
 - From Session 2, still true: actual counts match a count from the per-issue
@@ -153,6 +246,10 @@ a MonteJiraSim checkout, against that commit byte for byte. It also vendors
 
 Not checked:
 
+- Session 3's random streams are keyed by cutoff date and variant, not by
+  project, so the five projects that share cutoff dates used the same draws.
+  Each forecast is still a valid 10,000-trial sample; it was left alone so the
+  published numbers stand. Experiment 3b keys its streams by project too.
 - The extract scripts (`extract_done_dates.py`, `throughput_overview.py`) have
   no unit tests.
 - There is no CI on this repository; tests and lint are run by hand.
@@ -162,6 +259,11 @@ Not checked:
 
 From the plan: the "where it breaks" chart (#4), the shareable page, the
 LinkedIn post draft, and this repository made public.
+
+Experiment 3b is part of the story: the plan says to publish that neither
+block length passed, with the pace-shift table as the reason resampling the
+past has a ceiling. Everywhere it appears it has to be labelled as experiment
+code, not FlowAugur's engine.
 
 Material for "where it breaks":
 
@@ -213,8 +315,11 @@ Full list in the README. The ones most likely to bite:
 
 ## Not done
 
-- The plan doc is unchanged by this session: "Session 3" is not ticked and the
-  results are not recorded there.
+- The plan doc was not edited in Session 3b. Its 3b pass test says "from 51%
+  raw"; the exact figure is 50.4%, so that should read 50%.
 - Chart #4 ("where it breaks"), the shareable page and the post are Session 4.
 - No batchy projects were added; that would need its own filter, fixed before
   looking at results.
+- Nothing was tried beyond the two declared block lengths. Other fixes (a
+  wider range by design, a trend or pace model) would be new experiments with
+  their own pass tests declared first.
